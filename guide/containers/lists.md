@@ -190,3 +190,60 @@ multiList = [[0 for _ in range(4)] for _ in range(3)] # A 3x4 list
 
     print_list(numbers)
     ```
+
+## Creating a Readonly Dictionary
+
+In Python, there isn't a direct equivalent to C#'s IReadOnlyList, but you can achieve similar functionality with a few approaches:
+
+### Using tuple
+
+A simple and straightforward way to have an immutable list-like structure is to use a tuple. Tuples are immutable in Python and can be used similarly to lists for most read operations.
+
+```python
+immutable_list = (1, 2, 3)
+# immutable_list[0] = 4  # This will raise a TypeError
+```
+
+### Subclassing list and Overriding Mutating Methods
+
+You can create a subclass of list and override methods that mutate the list.
+
+```python
+class ImmutableList(list):
+    def __setitem__(self, index, value):
+        raise TypeError("Cannot modify ImmutableList")
+
+    def __delitem__(self, key):
+        raise TypeError("Cannot modify ImmutableList")
+
+    # Other mutating methods like append, extend, etc. can be overridden similarly.
+
+# Usage
+immutable_list = ImmutableList([1, 2, 3])
+# immutable_list[0] = 4  # Raises TypeError
+```
+
+### Custom Wrapper Class
+
+Creating a custom wrapper class that only exposes read methods of the list can provide a read-only view.
+
+```python
+class ReadOnlyList:
+    def __init__(self, data):
+        self._data = list(data)
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return iter(self._data)
+
+    # You can add other list read methods here
+
+# Usage
+original_list = [1, 2, 3]
+read_only_list = ReadOnlyList(original_list)
+```
