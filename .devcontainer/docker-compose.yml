@@ -1,0 +1,9 @@
+services:
+  houdini_dev:
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    build:
+      context: ..
+      dockerfile: .devcontainerDockerfile
+    volumes:
+      - ..:/home/vintecc/python_dev

@@ -1,0 +1,32 @@
+{
+	"name": "python_dev",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "python_dev",
+	"workspaceFolder": "/home/vintecc/python_dev",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode-remote.remote-containers",
+				"marlongerson.jetbrains-icons",
+				"ms-python.python",
+				"mhutchie.git-graph",
+				"iterative.dvc",
+				"GitHub.vscode-pull-request-github",
+				"GitHub.vscode-github-actions",
+				"yzhang.markdown-all-in-one"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"Azure Cloud Shell (Bash)": null,
+					"Azure Cloud Shell (PowerShell)": null,
+					"JavaScript Debug Terminal": null,
+					"bash": null,
+					"zsh": {
+						"path": "/usr/bin/zsh"
+					}
+				}
+			}
+		}
+	}
+}
