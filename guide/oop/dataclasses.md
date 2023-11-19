@@ -1,3 +1,3 @@
-# Inheritance
+# Data Classes
 
 todo
