@@ -2,6 +2,7 @@
 
 - [About Python](about/_index.md)
 - [Containers](containers/_index.md)
+- [Functions](functions/_index.md)
 - [Object Oriented Programming (OOP)](oop/_index.md)
 - [Data Handling](data/_index.md)
 - [Tesing](testing/_index.md)
