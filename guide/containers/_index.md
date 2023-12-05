@@ -5,5 +5,5 @@
 - [Tuples](tuples.md)
 - [Dictionaries](dictionaries.md)
 - [Sets](sets.md)
-- [Generators and Iterators](generators_and_iterators.md)
+- [Generators and Iterators](iterators_and_generators.md)
 - [Array](array.md)
