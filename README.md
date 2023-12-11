@@ -24,6 +24,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Creating Functions](guide/functions/creating_functions.md)
   - [Scopes and References](guide/functions/scopes_and_references.md)
   - [Typing](guide/functions/typing.md)
+  - [Lambdas](guide/functions/lambdas.md)
 - [Object Oriented Programming (OOP)](guide/oop/_index.md)
   - [About Classes](guide/oop/classes.md)
   - [Creating Classes](guide/oop/creating_classes.md)
@@ -34,6 +35,8 @@ Want to see what topics are in todo? See the **index per category**.
   - [Class Methods](guide/oop/class_methods.md)
   - [Data Classes](guide/oop/dataclasses.md)
   - [Inheritance](guide/oop/inheritance.md)
+- [Modules](guide/modules/_index.md)
+  - [Namespaces](guide/modules/namespaces.md)
 - TODO
   - Concurrency
   - Datas
