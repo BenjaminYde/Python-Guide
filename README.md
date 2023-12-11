@@ -22,6 +22,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Array](guide/containers/array.md)
 - [Functions](guide/functions/_index.md)
   - [Creating Functions](guide/functions/creating_functions.md)
+  - [Scopes and References](guide/functions/scopes_and_references.md)
   - [Typing](guide/functions/typing.md)
 - [Object Oriented Programming (OOP)](guide/oop/_index.md)
   - [About Classes](guide/oop/classes.md)
@@ -32,6 +33,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Static Methods](guide/oop/static_methods.md)
   - [Class Methods](guide/oop/class_methods.md)
   - [Data Classes](guide/oop/dataclasses.md)
+  - [Inheritance](guide/oop/inheritance.md)
 - TODO
   - Concurrency
   - Datas
