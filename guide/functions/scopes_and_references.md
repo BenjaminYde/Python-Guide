@@ -17,7 +17,6 @@ local_scope_example()
 # print(local_var)  # This would result in an error since local_var is not accessible here
 ```
 
-
 ### Global Scope
 
 **Global Scope**: Variables defined at the top level of a script or module or explicitly declared global inside a function are in the global scope. They are accessible anywhere in the module.
