@@ -40,6 +40,8 @@ Want to see what topics are in todo? See the **index per category**.
   - [Class Methods](guide/oop/class_methods.md)
   - [Data Classes](guide/oop/dataclasses.md)
   - [Inheritance](guide/oop/inheritance.md)
+  - [Abstract](guide/oop/abstract.md)
+  - [Final](guide/oop/final.md)
 - [Packages](guide/packages/_index.md)
   - [Namespaces](guide/packages/namespaces.md)
   - [Modules](guide/packages/modules.md)
