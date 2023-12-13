@@ -6,8 +6,29 @@ In Python, exceptions are events that occur during the execution of a program th
 
 ### What are Exceptions?
 
-Exceptions are errors that are detected during execution. They might be caused by invalid input, logical errors, resource constraints, etc.
-Python has numerous built-in exceptions like ValueError, TypeError, IndexError, etc., and allows the creation of custom exceptions.
+Exceptions are errors that are detected during execution. They might be caused by invalid input, logical errors, resource constraints, etc. Python has numerous built-in exceptions like ValueError, TypeError, IndexError, etc., and allows the creation of custom exceptions.
+
+### When to use exceptions
+
+- **Invalid User Input**: When a function receives input that's outside the expected or allowable range.
+
+- **File and I/O Operations**: Handling issues like file not found, read/write errors, or network communication failures.
+
+- **Resource Unavailability**: When an external resource (like a database or a web service) is unavailable or unresponsive.
+
+- **Value Constraints in Data**: Catching violations of data integrity or value constraints (e.g., division by zero, invalid date values).
+
+- **Illegal State Transitions**: In state-driven applications or state machines, handling transitions to illegal or undefined states.
+
+- **Integrity Checks in Data Processing**: When processing data, checking for and handling corrupt, missing, or invalid data.
+
+- **API or Protocol Contract Violations**: When a function or module's API contract is violated (e.g., incorrect parameters, unexpected data types).
+
+- **Exception Propagation**: Propagating errors from lower levels of the application to higher levels where they can be handled appropriately.
+
+- **Hardware and System-Level Errors**: Handling errors related to hardware or system-level issues, like memory allocation failures.
+
+- **Interrupting Long-Running Processes**: Interrupting or stopping long-running operations in response to specific conditions (e.g., user cancellation, timeout).
 
 ## Basic Exception Handling
 

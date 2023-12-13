@@ -19,6 +19,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Creating Functions](guide/general/creating_functions.md)
   - [Typing](guide/general/typing.md)
   - [Scopes and References](guide/general/scopes_and_references.md)
+  - [Exeptions](guide/general/exceptions.md)
   - [Lambdas](guide/general/lambdas.md)
 - [Containers](guide/containers/_index.md)
   - [Lists](guide/containers/lists.md)
