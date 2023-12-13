@@ -2,6 +2,7 @@
 
 - [Lists](lists.md)
 - [Iterating](iterating.md)
+- [Comprehensions](comprehensions.md)
 - [Tuples](tuples.md)
 - [Dictionaries](dictionaries.md)
 - [Sets](sets.md)

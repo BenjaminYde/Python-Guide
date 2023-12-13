@@ -50,7 +50,6 @@ for i in myListA:  # Outer loop
     print()
 ```
 
-
 ## Loop Control Statements
 
 Loop control statements change the execution from its normal sequence.

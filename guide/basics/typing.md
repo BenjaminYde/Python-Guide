@@ -50,31 +50,17 @@ Provides several types like List, Dict, Tuple, Optional, Union, etc.
 ```python
 from typing import List, Optional
 
-def process_items(items: Optional[List[str]]) -> None:
+def process_items(items: List[str]) -> None:
     #...
 ```
 
-## Generics
+###  Optional
 
-Define functions and classes that are parameterized by one or more types.
+todo
 
-```python
-T = TypeVar('T')
+###  Union
 
-def first(l: List[T]) -> T:
-    return l[0]
-```
-
-## Callable
-
-Specify the signature of a callable (function-like) parameter.
-
-```python
-from typing import Callable
-
-def apply_function(f: Callable[[int], str], value: int) -> str:
-    return f(value)
-```
+todo
 
 ## Type Guards
 
