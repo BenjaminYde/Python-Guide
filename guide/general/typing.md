@@ -56,11 +56,45 @@ def process_items(items: List[str]) -> None:
 
 ###  Optional
 
-todo
+In Python, Optional is a type hint (introduced in Python 3.5 and the typing module) that indicates that a variable may have a value of a specified type, or it could be None. It's a way to explicitly document that None is an acceptable value for a variable, in addition to other types.
+
+Usage:
+
+```python
+from typing import Optional
+
+def greet(name: Optional[str] = None) -> str:
+    if name is None:
+        return "Hello, Guest"
+    return f"Hello, {name}"
+```
+
+In this example, the greet function accepts either a string or None as its argument.
+
 
 ###  Union
 
-todo
+The Union type hint is used to indicate that a variable can be one of several types. It is useful when a function can accept arguments of different types.
+
+Usage:
+
+```python
+from typing import Union
+
+def process(data: Union[int, str]):
+    if isinstance(data, int):
+        return data * 2
+    return f"Received string: {data}"
+```
+
+In the process function, data can either be an int or a str.
+
+- `Union` is about saying "this can be any one of these types" (a logical OR).
+- `Tuple` is about saying "this is a collection of items, each with a specific type".
+- `Union` does not convey information about the number of elements.
+- `Tuple` specifies the exact number and types of elements.
+
+
 
 ## Type Guards
 

@@ -10,3 +10,5 @@
 - [Data Classes](dataclasses.md)
 - [Decorators](decorators.md)
 - [Inheritance](inheritance.md)
+- [Abstract](abstract.md)
+- [Final](final.md)
