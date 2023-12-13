@@ -1,6 +1,3 @@
 # Index
 
 todo
-
-- unittest
-- pytest

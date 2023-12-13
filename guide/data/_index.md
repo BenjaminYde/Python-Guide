@@ -5,3 +5,4 @@ todo
 - json
 - pydantic
 - xml
+- pandas

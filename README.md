@@ -39,11 +39,15 @@ Want to see what topics are in todo? See the **index per category**.
   - [Namespaces](guide/packages/namespaces.md)
   - [Modules](guide/packages/modules.md)
   - [Creating Packages](guide/packages/packages.md)
+- [Scripting](guide/scripting/_index.md)
+  - [About](guide/scripting/about.md)
+  - [File Handling](guide/scripting/file_handling.md)
 - TODO
   - Concurrency
-  - Datas
+  - Data Handling
   - Extentions
   - Libraries
+  - Networking
   - Scripting
   - Testing
   - Tooling
