@@ -197,7 +197,6 @@ print("He said, \"Hello World\"")  # Output: He said, "Hello World"
 
 Parsing strings in Python often involves converting string data into more appropriate data types (like integers, floats, or booleans) and vice versa. This is a common task in data handling, especially when dealing with input/output operations.
 
-
 ### Converting String to Int/Float
 
 ```python

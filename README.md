@@ -1,6 +1,7 @@
 # Welcome to the Python Guide 📚
 
-This repository is a Python guide designed which is designed to be easily opened using VS Code or Github. It contains extensive documentation, code examples, and best practices to help you become a proficient Python programmer.
+This repository is a Python guide designed which is designed to be easily opened using VS Code or Github. It contains extensive documentation, code examples, and best practices to help you become a proficient Python programmer. 
+The guide intends to be **to the point** so you can continue what really matters, programming.
 
 # Guide Index 🗂️
 
@@ -14,6 +15,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [The Python Interpreter](guide/about/python_interpreter.md)
 - [General Python](guide/general/_index.md)
   - [Strings](guide/general/strings.md)
+  - [Flow Control](guide/general/flow_control.md)
   - [Creating Functions](guide/general/creating_functions.md)
   - [Typing](guide/general/typing.md)
   - [Scopes and References](guide/general/scopes_and_references.md)
