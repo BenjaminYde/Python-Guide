@@ -2,13 +2,14 @@
 
 ## Definition and Initialization
 
-In Python, a tuple is similar to a list, but it is immutable, meaning that its elements cannot be changed after it is created. Tuples are defined using parentheses, with elements separated by commas. Here is how you can initialize a tuple:
+In Python, a tuple is similar to a list, but it is immutable, meaning that its elements cannot be changed after it is created. Tuples are defined using parentheses, with elements separated by commas. 
+
+Here is how you can initialize a tuple:
 
 ```python
 myTuple = (10, 20, 30, 40, 50) # A tuple of integers
 anotherTuple = ('apple', 'banana', 'cherry') # A tuple of strings
 ```
-
 ## Characteristics of Tuples
 
 - **Immutable**: Once a tuple is created, you cannot add, remove, or modify its elements.

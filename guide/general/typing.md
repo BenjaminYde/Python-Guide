@@ -40,7 +40,30 @@ def greet(name: str) -> str:
 Creating custom names for types, useful for simplifying complex type definitions.
 
 ```python
-Vector = List[float]
+Vector = list[float] # Vector is an alias for a list of floats
+```
+
+```python
+def scale(scalar: float, vector: Vector) -> Vector:
+    return [scalar * num for num in vector]
+
+# passes type checking; a list of floats qualifies as a Vector.
+new_vector = scale(2.0, [1.0, -4.2, 5.4])
+```
+
+The `type` statement is new in **Python 3.12**.     
+For backwards compatibility, type aliases can also be created through simple assignment:
+
+```python
+type Vector = list[float] # Vector is an alias for a list of floats
+```
+
+Or marked with `TypeAlias` to make it explicit that this is a type alias, not a normal variable assignment:
+
+```python
+from typing import TypeAlias
+
+Vector: TypeAlias = list[float]
 ```
 
 ## The typing Module
@@ -54,9 +77,9 @@ def process_items(items: List[str]) -> None:
     #...
 ```
 
-###  Optional
+##  Optional
 
-In Python, Optional is a type hint (introduced in Python 3.5 and the typing module) that indicates that a variable may have a value of a specified type, or it could be None. It's a way to explicitly document that None is an acceptable value for a variable, in addition to other types.
+In Python, `Optional` is a type hint (introduced in Python 3.5 and the typing module) that indicates that a variable may have a value of a specified type, or it could be None. It's a way to explicitly document that None is an acceptable value for a variable, in addition to other types.
 
 Usage:
 
@@ -71,10 +94,27 @@ def greet(name: Optional[str] = None) -> str:
 
 In this example, the greet function accepts either a string or None as its argument.
 
+## Tuple
 
-###  Union
+In Python, a tuple is similar to a list, but it is immutable, meaning that its elements cannot be changed after it is created. Tuples are defined using parentheses, with elements separated by commas. 
 
-The Union type hint is used to indicate that a variable can be one of several types. It is useful when a function can accept arguments of different types.
+Here is how you can initialize a tuple:
+
+```python
+myTuple = (10, 20, 30, 40, 50) # A tuple of integers
+anotherTuple = ('apple', 'banana', 'cherry') # A tuple of strings
+```
+#### Characteristics of Tuples
+
+- **Immutable**: Once a tuple is created, you cannot add, remove, or modify its elements.
+- **Ordered**: Like lists, tuples maintain the order of elements.
+- **Indexable** and Slicable: You can access elements by their index and slice tuples.
+- **Allow Duplicate Elements**: Tuples can contain duplicate elements.
+
+##  Union
+
+The Union type hint is used to indicate that a variable can be one of several types.        
+It is useful when a function can accept arguments of different types.
 
 Usage:
 
@@ -85,6 +125,10 @@ def process(data: Union[int, str]):
     if isinstance(data, int):
         return data * 2
     return f"Received string: {data}"
+
+process(1) # ok
+process("Hello") # ok
+process(1, "Hello") # not ok
 ```
 
 In the process function, data can either be an int or a str.
@@ -94,7 +138,24 @@ In the process function, data can either be an int or a str.
 - `Union` does not convey information about the number of elements.
 - `Tuple` specifies the exact number and types of elements.
 
+## NewType
 
+`NewType` creates a new type that is semantically distinct from its base type, even if it's technically the same (like an `int` or `str`). For instance, UserID and ProductID may both be integers, but they have different meanings and roles in your code.
+
+Example:
+
+```python
+from typing import NewType
+
+UserID = NewType('UserID', int)
+ProductID = NewType('ProductID', int)
+
+def get_user_name(user_id: UserID) -> str:
+    pass
+
+def get_product_name(product_id: ProductID) -> str:
+    pass
+```
 
 ## Type Guards
 

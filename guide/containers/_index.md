@@ -8,3 +8,5 @@
 - [Sets](sets.md)
 - [Generators and Iterators](iterators_and_generators.md)
 - [Array](array.md)
+- [Mapping](mapping.md)
+- [Sequence](sequence.md)

@@ -87,32 +87,6 @@ class Mammal(Animal):
 - **isinstance(object, class)**: Checks if an object is an instance of a class or a subclass thereof.
 - **issubclass(class1, class2)**: Checks if class1 is a subclass of class2.
 
-## Abstract Base Classes (ABCs)
-
-Abstract Base Classes are a form of interface that define methods that must be implemented by any subclass. They are used to enforce a certain structure in derived classes.
-
-Example:
-
-```python
-from abc import ABC, abstractmethod
-
-class Shape(ABC):
-    @abstractmethod
-    def area(self):
-        pass
-
-class Rectangle(Shape):
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def area(self):
-        return self.width * self.height
-
-# rect = Rectangle(3, 4)  # This will work
-# shape = Shape()         # This will raise an error
-```
-
 ## Diamond Problem in Multiple Inheritance
 
 The diamond problem occurs in a multiple inheritance scenario when a class inherits from two classes that both inherit from the same base class. This can create ambiguity in the method resolution order (MRO).
