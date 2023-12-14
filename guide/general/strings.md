@@ -57,9 +57,9 @@ echo = "Echo! " * 3  # "Echo! Echo! Echo! "
 
 ### Slicing and Indexing
 
-Access characters by index (0-based).
-Negative indexing is supported (starts from the end).
-Slicing syntax: [start:end:step].
+- Access characters by index (0-based).   
+- Negative indexing is supported (starts from the end).   
+- Slicing syntax: [start:end:step].
 
 ```python
 # Indexing

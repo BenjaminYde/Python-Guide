@@ -21,6 +21,8 @@ Want to see what topics are in todo? See the **index per category**.
   - [Scopes and References](guide/general/scopes_and_references.md)
   - [Exeptions](guide/general/exceptions.md)
   - [Lambdas](guide/general/lambdas.md)
+  - [Callable](guide/general/callable.md)
+  - [Generics](guide/general/generics.md)
 - [Containers](guide/containers/_index.md)
   - [Lists](guide/containers/lists.md)
   - [Sequence](guide/containers/sequence.md)
