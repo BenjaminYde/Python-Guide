@@ -1,6 +1,6 @@
 {
 	"name": "python_dev",
-	"dockerComposeFile": "docker-compose.yml",
+	"dockerComposeFile": "docker-compose.yaml",
 	"service": "python_dev",
 	"workspaceFolder": "/home/vintecc/python_dev",
 	"customizations": {

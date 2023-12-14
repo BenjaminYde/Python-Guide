@@ -53,6 +53,7 @@ Want to see what topics are in todo? See the **index per category**.
 - [Scripting](guide/scripting/_index.md)
   - [About](guide/scripting/about.md)
   - [File Handling](guide/scripting/file_handling.md)
+  - [Logging](guide/scripting/logging.md)
 - TODO
   - Concurrency
   - Data Handling
