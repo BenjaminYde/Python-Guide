@@ -55,12 +55,12 @@ Want to see what topics are in todo? See the **index per category**.
   - [File Handling](guide/scripting/file_handling.md)
   - [Logging](guide/scripting/logging.md)
   - [Subprocesses](guide/scripting/subprocess.md)
+  - [Executing Python](guide/scripting/shebang.md)
 - TODO
   - Concurrency
   - Data Handling
   - Extentions
   - Libraries
   - Networking
-  - Scripting
   - Testing
   - Tooling
