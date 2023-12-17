@@ -111,3 +111,161 @@ Instead of displaying log messages to the console, you can write them to a file:
 logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO)
 logging.info('This will get logged to a file')
 ```
+
+## Adding contextual data to your logs
+
+Contextual logging is about including additional information in log messages that can help to identify and understand the context in which the log message was generated. 
+
+### f-strings
+
+f-strings allow you to embed expressions inside string literals, using curly braces `{}`.
+
+```python
+import logging
+
+user_id = 'user123'
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('myapp')
+
+logger.info(f'User action performed by {user_id}')
+```
+
+#### Limitations of f-strings
+
+- **Performance**: The f-string is always evaluated, even if the logging level means the message will not be emitted. This can lead to performance overhead.
+
+- **Lack of Lazy Evaluation**: Unlike % formatting or the extra parameter, which are only processed if the message is to be logged, f-strings don't provide this optimization.
+
+### % Formatting
+
+The `%` formatting in loggers is a way to delay string interpolation until it's necessary (lazy evaluation). This is the traditional way to insert contextual information into log messages.
+
+```python
+logger.info('User action performed by %s', user_id)
+```
+
+#### Limitations of % formatting
+
+- **Readability**: For complex log messages, % formatting can become less readable compared to f-strings.
+
+- **Verbose for Multiple Variables**: It can be verbose if you have multiple variables to log because you need to pass them all as extra arguments.
+
+- **Typing Mistakes**: It's prone to errors if the format string doesn't match the type of the argument.
+
+### Extra Field (dict)
+
+The `extra` parameter allows you to pass a dictionary to the `Logger` method, which then gets added to the `LogRecord` object.
+
+```python
+logger.info('User action performed', extra={'user_id': user_id})
+```
+
+#### Limitations of using the extra field
+
+- **Key Clashes**: The keys used in the extra dictionary cannot clash with the keys used by LogRecord (like msg, args, etc.). If you accidentally use the same name, it can lead to unexpected behavior or errors.
+
+- **Missing Keys in Formatter**: If your formatter expects a certain key from the extra dict and it's not provided, you will get an error when the logger attempts to format the message.
+
+  - This can be fixed by using the `python-json-logger` library which allows you to add context to your logs through the extra property without needing to modify the log format.
+
+- **Maintenance**: You must ensure that the extra dictionary is consistently used and maintained across different logging calls, which can add to maintenance overhead.
+
+- **Limited to Dictionary**: The extra parameter must be a dictionary. You cannot pass other types of context directly without wrapping them in a dictionary.
+
+## Optimization: Avoid Expensive Functions
+
+**Lazy evaluation** refers to the programming concept where an expression is not evaluated until its value is needed. In the context of logging, this means constructing the log message string only if that message will actually be logged, based on the current logging level.
+
+### % Formatting
+
+When using `%` formatting with the logging module, the message string is constructed only if the logging level is such that the message will be emitted. This is because the formatting operation is handled internally by the logging module, which first checks the log level before formatting the message.
+
+Here's an example using % formatting, which benefits from lazy evaluation:
+
+```python
+logger.debug('This is a debug message with a %s', expensive_func())
+```
+
+If the logger's level is higher than DEBUG, the message and the associated string formatting are never processed, saving the overhead of the formatting operation.
+
+### f-String Formatting
+
+when using f-strings, the evaluation of the string and its embedded expressions is immediate and happens regardless of whether the log level would allow the message to be emitted. This means that the computation to create the string is done even if the message is never logged.
+
+Here's the same log statement using an f-string:
+
+```python
+logger.debug(f'This is a debug message with a {expensive_func()}')
+```
+
+**Computing the arguments** passed to the logging method can be **expensive**, and you may want to avoid doing it if the logger will just throw away your event. To decide what to do, you can call the `isEnabledFor()` method which takes a level argument and returns true if the event would be created by the Logger for that level of call. You can write code like this:
+
+```python
+if logger.isEnabledFor(logging.DEBUG):
+    logger.debug('Message with %s, %s', expensive_func)
+```
+
+If the logger’s threshold is set above DEBUG, the calls to expensive_func() is never made.
+
+## Automatically Rotate log files
+
+When you're logging to files, you need to be careful not to allow the file grow too large and consume a huge amount of disk space. By rotating log files, older logs can be compressed or deleted, freeing up space and reducing the risk of disk usage issues. Additionally, rotating logs helps to maintain an easily manageable set of log files, and can also be used to reduce the risk of sensitive information exposure by removing logs after a set period of time.
+
+### RotatingFileHandler
+
+This handler rotates the log files based on the file size.
+
+```python
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Set up a logger
+logger = logging.getLogger('my_logger')
+logger.setLevel(logging.DEBUG)
+
+# Add a RotatingFileHandler
+handler = RotatingFileHandler(
+    'my_log.log',            # Log file name
+    maxBytes=1e6,            # Max size of a log file (1 MB)
+    backupCount=5,           # Number of backup files to keep
+)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
+
+# Log something
+logger.debug('This is a debug message')
+```
+
+In the example above, the log file named '`my_log.log`' will be rotated out when it reaches 1 MB in size. At that point, the current my_log.log is renamed to `my_log.log.1`, and a new `my_log.log` is created for future log messages. 
+
+### TimedRotatingFileHandler
+
+This handler rotates the log files at certain timed intervals.
+
+```python
+import logging
+from logging.handlers import TimedRotatingFileHandler
+
+# Set up a logger
+logger = logging.getLogger('my_timed_logger')
+logger.setLevel(logging.DEBUG)
+
+# Add a TimedRotatingFileHandler
+handler = TimedRotatingFileHandler(
+    'timed_log.log',         # Log file name
+    when='midnight',         # Rotate at midnight
+    interval=1,              # Rotate every day
+    backupCount=30,          # Keep 30 days of logs
+)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
+
+# Log something
+logger.debug('This is a debug message')
+```
+
+Here, `timed_log.log` will be rotated each day at midnight. The old log file will be renamed to include a timestamp and a new log file will be created for the new day. The `backupCount` parameter ensures that only the last 30 days of logs are kept.
