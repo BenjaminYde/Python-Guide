@@ -60,6 +60,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Environment Variables](guide/scripting/env_variables.md)
 - [Concurrency](guide/concurrency/_index.md)
   - [Introduction To Concurrency](guide/concurrency/introduction.md)
+  - [Global Interpreter Lock (GIL)](guide/concurrency/gil.md)
 - TODO
   - Concurrency
   - Data Handling
