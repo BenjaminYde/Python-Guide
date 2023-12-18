@@ -57,6 +57,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Subprocesses](guide/scripting/subprocess.md)
   - [Executing Python](guide/scripting/shebang.md)
   - [Custom CLI (click)](guide/scripting/click.md)
+  - [Environment Variables](guide/scripting/env_variables.md)
 - TODO
   - Concurrency
   - Data Handling
