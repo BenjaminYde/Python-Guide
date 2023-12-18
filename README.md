@@ -58,6 +58,8 @@ Want to see what topics are in todo? See the **index per category**.
   - [Executing Python](guide/scripting/shebang.md)
   - [Custom CLI (click)](guide/scripting/click.md)
   - [Environment Variables](guide/scripting/env_variables.md)
+- [Concurrency](guide/concurrency/_index.md)
+  - [Introduction To Concurrency](guide/concurrency/introduction.md)
 - TODO
   - Concurrency
   - Data Handling
