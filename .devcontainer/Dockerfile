@@ -29,7 +29,9 @@ RUN apt -qq update && \
 
 # PIP runtime packages
 RUN python3 -m pip install -q --retries 10000 --timeout 60 --no-cache-dir \
-    click==8.1.3 
+    click==8.1.3 \
+    ipykernel==6.27.1 \
+    requests==2.31.0
     
 # Create User
 RUN \

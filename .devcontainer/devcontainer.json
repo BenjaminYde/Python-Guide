@@ -13,7 +13,8 @@
 				"iterative.dvc",
 				"GitHub.vscode-pull-request-github",
 				"GitHub.vscode-github-actions",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"ms-toolsai.jupyter"
 			],
 			"settings": {
 				"terminal.integrated.defaultProfile.linux": "zsh",
