@@ -431,3 +431,53 @@ consumer_thread.join()
 3. **Resuming After Notification**:
    - Once the producer calls `condition.notify()`, the consumer is awakened (unblocked) and re-acquires the lock.
    - After re-acquiring the lock, it proceeds to the next line and completes its execution.
+
+## Thread Local Storage (TLS)
+
+Thread Local Storage (TLS) in Python is a way to create data that is local to a specific thread. This concept is particularly useful in scenarios where you want to avoid conflicts between threads accessing shared data. By using thread-local storage, each thread gets its own separate copy of a data variable, ensuring that one thread does not interfere with another.
+
+### Purpose
+
+TLS is used to store data that is unique and isolated to each thread. It's a form of global storage that is accessed globally but isolated per thread.
+
+### Implementation
+
+In Python, TLS is implemented using the `threading.local()` class. When you create an instance of `threading.local()`, each thread will have its own independent instance of that object.
+
+### Usage
+
+- You can set attributes on the `threading.local()` instance as you would with any other object. Each thread will see a different value for these attributes.
+- It’s a convenient way to hold per-thread state without needing to pass objects explicitly from function to function within a thread.
+
+Example:
+
+```python
+import threading
+
+# Create a thread-local data object
+mydata = threading.local()
+
+def thread_function():
+    # Each thread will have its own 'mydata.value'
+    mydata.value = 0
+    for _ in range(100):
+        mydata.value += 1
+    print(f"Thread {threading.current_thread().name} value: {mydata.value}")
+
+# Create and start several threads
+threads = [threading.Thread(target=thread_function) for _ in range(3)]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
+```
+
+In this example, each thread increments its own `mydata.value` independently. Despite `mydata` being a global object, its `value` attribute is specific to each thread.
+
+### Benefits and Use Cases
+
+- **Isolation**: TLS is useful when you need to maintain data that is specific to a thread, such as user session information in a web application server.
+
+- **Safety**: It helps avoid the pitfalls of shared data in multithreaded applications, as each thread has its own copy of data, eliminating the need for locks or other synchronization primitives for that data.
+
+- **Convenience**: It can make it easier to design thread-safe applications since you don't have to pass objects around to keep track of thread-specific data.
