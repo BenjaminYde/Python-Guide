@@ -432,6 +432,106 @@ consumer_thread.join()
    - Once the producer calls `condition.notify()`, the consumer is awakened (unblocked) and re-acquires the lock.
    - After re-acquiring the lock, it proceeds to the next line and completes its execution.
 
+## Barrier
+
+### Definition
+
+A Barrier is a synchronization construct that is used to make multiple threads wait until a certain number of them have reached a specific point in their execution. Once the specified number of threads have reached the barrier, all of them are released to continue their execution. This is useful for coordinating actions among a group of threads.
+
+### Behavior
+
+- **Initialization**: A Barrier is initialized with a count that specifies the number of threads that need to call wait() on the barrier before any of them can proceed.
+
+- **Waiting at the Barrier**: When a thread reaches a point where it needs to synchronize with other threads, it calls barrier.wait(). This call blocks the thread until the specified number of threads have all called wait().
+
+- **Releasing Threads**: As soon as the required number of threads have called wait(), the barrier is considered complete, and all waiting threads are released simultaneously.
+
+- **Resetting**: Optionally, barriers can be reset to their initial state for reuse, depending on the implementation.
+
+- **Aborting**: Some implementations of barriers also allow for the barrier to be aborted, which releases all waiting threads immediately, usually in response to some exceptional condition.
+
+### Use Case
+
+Barriers are typically used in scenarios where multiple threads perform different parts of a computation in parallel and need to synchronize at certain points. Examples include:
+
+- **Parallel Computations**: In algorithms where different phases of computation need to be synchronized across threads, such as in parallel matrix multiplication or multi-threaded sorting algorithms.
+
+- **Resource Initialization**: When multiple threads need to wait until a shared resource (like a database connection pool or a complex data structure) is fully initialized before they can proceed.
+
+- **Testing and Simulation**: In testing scenarios, where you need to simulate simultaneous actions or events in a multi-threaded environment.
+
+Example:
+
+```python
+import threading
+import time
+import random
+
+# Define the number of threads
+num_threads = 4
+
+# Create a barrier for num_threads
+barrier = threading.Barrier(num_threads)
+
+def process_data(thread_id):
+    # Phase 1: Independent processing
+    time.sleep(random.randint(1, 3))  # Simulate some work
+    print(f"Thread {thread_id} completed phase 1")
+
+    # Wait at the barrier for all threads to complete phase 1
+    try:
+        barrier.wait()
+    except threading.BrokenBarrierError:
+        print(f"Barrier broken: Thread {thread_id}")
+
+    # Phase 2: Processing after synchronization
+    time.sleep(random.randint(1, 3))  # Simulate some more work
+    print(f"Thread {thread_id} completed phase 2")
+
+def run():
+    # Create and start the threads
+    threads = [
+        threading.Thread(target=process_data, args=(i,)) 
+        for i in range(num_threads)
+    ]
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    print("All threads have completed their tasks")
+
+run()
+```
+
+Output:
+```
+Thread 3 completed phase 1
+Thread 1 completed phase 1
+Thread 2 completed phase 1
+Thread 0 completed phase 1
+Thread 2 completed phase 2
+Thread 0 completed phase 2
+Thread 1 completed phase 2
+Thread 3 completed phase 2
+All threads have completed their tasks
+```
+
+
+In this example:
+
+- Each thread runs the process_data function, which represents the task to be executed in two phases.
+
+- During Phase 1, each thread performs some work independently (simulated by time.sleep).
+
+- After completing Phase 1, each thread reaches the barrier.wait() call. This call blocks the thread until all threads have reached this point.
+
+- Once all threads have reached the barrier, they are all released to proceed to Phase 2.
+
+- After Phase 2, the threads complete their execution, and the main thread waits for all of them to finish using join().
+
 ## Thread Local Storage (TLS)
 
 Thread Local Storage (TLS) in Python is a way to create data that is local to a specific thread. This concept is particularly useful in scenarios where you want to avoid conflicts between threads accessing shared data. By using thread-local storage, each thread gets its own separate copy of a data variable, ensuring that one thread does not interfere with another.
