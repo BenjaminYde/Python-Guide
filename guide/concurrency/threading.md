@@ -91,6 +91,8 @@ print("Thread finished execution.")
 
 The `Lock` class in Python's `threading` module is a synchronization primitive that is used to ensure that only one thread can enter a particular section of code at a time. This is crucial in scenarios where multiple threads need to access or modify a shared resource. Without proper synchronization, concurrent accesses and modifications can lead to inconsistent or corrupted data, a problem known as a race condition.
 
+A lock is the simplest synchronization primitive used to ensure that only one thread can access a particular section of code or resource at a time. It's a mutual exclusion (mutex) mechanism.
+
 ### What Does Lock Avoid?
 
 - **Race Conditions**: When multiple threads access or modify shared data simultaneously, the final state of the data can depend on the order of accesses, leading to unpredictable and erroneous results. Locks prevent race conditions by ensuring that only one thread can access the shared resource at a time.
@@ -229,3 +231,203 @@ non_daemon_thread.join()
 
 print("Main Program: Exiting")
 ```
+
+## Thread args
+
+The `args` parameter in the `Thread` constructor is used to pass a tuple of arguments to the target function. It's important to note that `args` should always be a tuple. Even if there is only one argument, it should be formatted as a tuple by including a comma, like (`arg`,).
+
+### Single Argument
+
+Suppose you have a function process_data(data) that processes some data. If you want to run this function in a separate thread and pass the data to it, you would do it like this:
+
+```python
+import threading
+
+def process_data(data: str):
+    # Function logic here
+    print(f"Processing {data}")
+
+# Data to be processed
+my_data = "example_data"
+
+# Creating a thread and passing arguments to the function
+thread = threading.Thread(target=process_data, args=(my_data,))
+thread.start()
+thread.join()
+```
+
+### Multiple Arguments
+
+f your target function requires multiple arguments, you can include them all in the `args` tuple:
+
+```python
+def process_multiple_data(data1, data2, data3):
+    # Function logic here
+    print(f"Processing {data1}, {data2}, {data3}")
+
+# Creating a thread with multiple arguments
+thread = threading.Thread(target=process_multiple_data, args=("data1", "data2", "data3"))
+thread.start()
+thread.join()
+```
+
+## Semaphores
+
+### Definition
+
+A semaphore is a more flexible synchronization primitive than a Lock, as it allows a resource to be accessed by a specific number of threads at a time. It is ideal for scenarios where a resource can handle limited concurrent accesses.
+
+### Behavior
+
+A semaphore is initialized with a counter that represents the number of threads that can access the resource simultaneously.
+When a thread acquires the semaphore (semaphore.acquire()), the counter is decremented. When the counter reaches zero, subsequent threads attempting to acquire the semaphore will block until one of the threads releases the semaphore (semaphore.release()), incrementing the counter again.
+
+### Use Case
+
+Semaphores are used in situations where a resource can support a limited number of concurrent accesses, but more than one. For instance, managing access to a pool of database connections or limiting the number of threads performing a particular I/O operation.
+
+Example:
+
+```python
+import threading
+import time
+
+# Initialize a semaphore allowing 3 concurrent accesses
+semaphore = threading.Semaphore(3)
+
+def access_resource(i):
+    print(f"Thread {i} is waiting to access the resource")
+    with semaphore:
+        print(f"Resource accessed by Thread {i}")
+        time.sleep(1) # Simulate resource usage
+    print(f"Thread {i} is releasing the resource")
+
+threads = [
+    threading.Thread(target=access_resource, args=(i,)) 
+    for i in range(5)
+]
+
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
+```
+
+## Events
+
+### Definition
+
+An Event is used for signaling between threads, allowing one or more threads to wait for a signal from another thread before proceeding. It is a simple yet powerful mechanism for thread synchronization.
+
+### Behavior
+
+- An Event object maintains an internal flag which can be set to `True` (using `event.set()`) or False (using `event.clear()`).
+
+- Threads wait for the Event to be set using `event.wait()`. If the Event's internal flag is `True`, `wait()` returns immediately, otherwise, it blocks until the flag is set to `True`.
+
+- When the Event is set, all threads waiting on it are awakened. Once awakened, they typically check some condition and then proceed with their execution.
+
+### Use Case
+
+Events are ideal for one-time signaling and are often used in scenarios where threads are performing tasks that must be paused until a specific condition or state change occurs elsewhere in the program.
+
+Example:
+
+```python
+import threading
+import time
+
+event = threading.Event()
+
+def wait_for_event():
+    print("Thread waiting for event")
+    event.wait()
+    print("Event has been signaled, continuing execution")
+
+def signal_event():
+    print("Thread signaling the event in 3 sec...")
+    time.sleep(3)
+    event.set()
+
+def run():
+    print("Main Thread: Start")
+
+    waiter_thread = threading.Thread(target=wait_for_event)
+    signaler_thread = threading.Thread(target=signal_event)
+
+    waiter_thread.start()
+    signaler_thread.start()
+
+    waiter_thread.join()
+    signaler_thread.join()
+
+    print("Main Thread: Finished")
+    
+run()
+```
+
+## Conditions
+
+### Definition
+
+A Condition is a more complex synchronization tool that allows threads to wait for certain conditions to become true. Unlike Events, Conditions are associated with some state change in the application and are typically used with a shared resource.
+
+### Behavior
+
+- A Condition object encapsulates a Lock and adds the ability for threads to wait for a particular condition or state change. It allows threads to safely check and modify shared state.
+
+- Threads call `condition.wait()` to suspend their execution until another thread calls `condition.notify()` or `condition.notify_all()`.
+
+- When `notify()` is called, one of the waiting threads is awakened; `notify_all()` wakes up all waiting threads. However, before they resume execution, they must re-acquire the Condition's underlying Lock.
+
+- The Condition object must be locked using `with condition`: before calling `wait()`, `notify()`, or `notify_all()`.
+
+### Use Case
+
+Conditions are used in more complex scenarios where the state of the shared resource changes over time and threads need to wait for specific states. They are common in producer-consumer problems, where the producers and consumers share a common resource (like a queue) and must wait for specific conditions (like queue being non-empty or non-full).
+
+Example:
+
+```python
+import threading
+
+condition = threading.Condition()
+item_available = False
+
+def consumer():
+    with condition:
+        if not item_available:
+            print("Consumer waiting for item")
+            condition.wait()
+        print("Consumer consumed the item")
+
+def producer():
+    global item_available
+    with condition:
+        print("Producer produced an item")
+        item_available = True
+        condition.notify()
+
+producer_thread = threading.Thread(target=producer)
+consumer_thread = threading.Thread(target=consumer)
+
+consumer_thread.start()
+producer_thread.start()
+
+producer_thread.join()
+consumer_thread.join()
+```
+
+#### Explanation
+
+1. **Initial Check**: When the consumer() function is called, it first acquires the condition lock (because of the with condition: statement).
+
+2. **Waiting for the Condition**:
+    - The `if not item_available`: check is used to determine if the item is available for consumption.
+    - If `item_available` is `False` (meaning the item is not available), the consumer calls condition.wait(). This does two things:
+      - Releases the lock temporarily. This allows other threads (like the producer) to acquire the lock and change the state (i.e., produce an item).
+      - Blocks (waits) until `condition.notify()` or `condition.notify_all()` is called by another thread (the producer in this case).
+  
+3. **Resuming After Notification**:
+   - Once the producer calls `condition.notify()`, the consumer is awakened (unblocked) and re-acquires the lock.
+   - After re-acquiring the lock, it proceeds to the next line and completes its execution.
