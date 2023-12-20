@@ -519,7 +519,6 @@ Thread 3 completed phase 2
 All threads have completed their tasks
 ```
 
-
 In this example:
 
 - Each thread runs the process_data function, which represents the task to be executed in two phases.
