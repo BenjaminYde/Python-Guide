@@ -62,6 +62,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Introduction To Concurrency](guide/concurrency/introduction.md)
   - [Global Interpreter Lock (GIL)](guide/concurrency/gil.md)
   - [Threading Module](guide/concurrency/threading.md)
+  - [Asyncio Module](guide/concurrency/asyncio.md)
 - TODO
   - Data Handling
   - Extentions
