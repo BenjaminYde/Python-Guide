@@ -124,6 +124,202 @@ In this example:
 
 4. **main**: This is the entry point for running the coroutine using` asyncio.run()`. It awaits the `fetch_data` coroutine and then prints the fetched data.
 
+## Common Methods
+
+There are several other important functions and concepts in `asyncio` that are useful to understand. Each serves a different purpose in managing and orchestrating asynchronous operations:
+
+### asyncio.create_task
+
+`asyncio.create_task` is used to schedule the execution of a coroutine. It returns a `Task` object, which is a subclass of `Future`.
+
+**Usage**: This is the standard way to run coroutines concurrently when you need to have a handle to the tasks for later manipulation (like cancelling).
+
+Syntax: 
+
+```python
+task = asyncio.create_task(my_task())
+```
+
+Example:
+
+```python
+async def my_task():
+    await asyncio.sleep(1)
+    print("Task completed")
+
+async def main():
+    task = asyncio.create_task(my_task())
+    await task
+
+asyncio.run(main())
+```
+
+### asyncio.gather
+
+`asyncio.gather` is used for the following purposes:
+
+- **Concurrent Execution**: It allows you to run multiple asynchronous tasks concurrently. This is particularly useful when you have several operations that can be performed in parallel, such as making multiple network requests or performing I/O operations.
+
+- **Result Aggregation**: It not only runs these tasks concurrently but also aggregates their results into a single list, preserving the order of tasks as they were passed to gather.
+
+Syntax:
+
+```python
+results = await asyncio.gather(*tasks)
+```
+
+Example:
+
+```python
+import asyncio
+
+async def task1():
+    await asyncio.sleep(2)
+    return 'Result of task1'
+
+async def task2():
+    await asyncio.sleep(1)
+    return 'Result of task2'
+
+async def main():
+    results = await asyncio.gather(task1(), task2())
+    for result in results:
+        print(result)
+
+asyncio.run(main())
+```
+
+### asyncio.wait
+
+`asyncio.wait` is used to wait for the completion of multiple `Future` or coroutine objects. Unlike `gather`, it does not necessarily return the results of these awaitables.
+
+- **Flexibility in Handling Task Completion**: asyncio.wait allows you to specify how you want to wait for the tasks to complete. For example, you can choose to continue as soon as any task is done, all tasks are done, or after a certain timeout.
+
+- **Returns Two Sets**: It returns two sets of tasks: one for completed (or failed) tasks and another for pending tasks. This is useful for scenarios where you want to perform different actions based on whether tasks are completed or still pending.
+
+- **Independent Task Handling**: You can handle the results or exceptions of each task individually, which offers more control in case of tasks that might result in exceptions.
+
+Syntax:
+
+```python
+done, pending = await asyncio.wait(my_task, timeout=None, return_when=FIRST_COMPLETED)
+```
+
+Example:
+
+```python
+import asyncio
+
+async def task(n):
+    await asyncio.sleep(n)
+    return n
+
+async def main():
+    tasks = [task(1), task(2), task(3)]
+    done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+
+    for d in done:
+        print(f"Task completed with result: {d.result()}")
+
+    for p in pending:
+        print("Cancelling a pending task")
+        p.cancel()
+
+asyncio.run(main())
+
+```
+
+### asyncio.wait_for
+
+`asyncio.wait_for` is used to set a timeout for an awaitable. If the awaitable completes within the timeout, `wait_for` returns its result. Otherwise, it cancels the task and raises `asyncio.TimeoutError`.
+
+**Usage**: It's useful for setting a maximum time limit for an operation, beyond which it shouldn't block other operations.
+
+Syntax: 
+
+```python
+result = await asyncio.wait_for(my_task, timeout)
+```
+
+Example:
+
+```python
+async def long_running_task():
+    await asyncio.sleep(10)
+
+async def main():
+    try:
+        await asyncio.wait_for(long_running_task(), timeout=2)
+    except asyncio.TimeoutError:
+        print("The task took too long to complete")
+
+asyncio.run(main())
+```
+
+### asyncio.as_completed
+
+`asyncio.as_completed` is used to iterate over asynchronous tasks as they are completed, regardless of the order in which they were started.
+
+**Usage**: This function is beneficial when you want to start processing the results of tasks as soon as each one is completed, without waiting for all of them to finish.
+
+Syntax:
+
+```python
+for routine in asyncio.as_completed(my_task, timeout=None):
+    earliest_result = await routine
+```
+
+Example:
+
+```python
+async def task(delay):
+    await asyncio.sleep(delay)
+    return delay
+
+async def main():
+    tasks = [task(3), task(1), task(2)]
+    for coro in asyncio.as_completed(tasks):
+        result = await coro
+        print(f"Completed task with result: {result}")
+
+asyncio.run(main())
+```
+
+### asyncio.ensure_future
+
+`asyncio.ensure_future` ensures you are working with a Future object. It's useful in scenarios where you have a coroutine or an awaitable object, and you need to ensure it is wrapped as a Future.
+
+**Usage**: It's useful for converting a coroutine or a coroutine-like object into a Future that can be awaited. This can be helpful when dealing with older code that returns futures rather than coroutines.
+
+Syntax: 
+
+```python
+future = asyncio.ensure_future(task)
+```
+
+Example:
+
+```python
+import asyncio
+
+async def my_coroutine():
+    await asyncio.sleep(1)
+    return "Coroutine result"
+
+async def main():
+    # Wrapping a coroutine into a Future object
+    future = asyncio.ensure_future(my_coroutine())
+
+    # Do other stuff here if needed
+    # ...
+
+    # Wait for the future to be done and get its result
+    result = await future
+    print(result)
+
+asyncio.run(main())
+```
+
 ## Synchronization Primitives
 
 In `asyncio`, synchronization primitives are used to manage access to shared resources and coordinate the execution of coroutines in a concurrent environment. These primitives are essential for preventing race conditions and ensuring data consistency when multiple coroutines access or modify shared data. Let's explore some of the key synchronization primitives provided by `asyncio`.
