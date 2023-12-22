@@ -77,13 +77,12 @@ Let's say we want to simulate fetching data from a remote source, handling excep
 
 ```python
 import asyncio
-import random
 
 # Simulating a network request
 async def fetch_from_remote(url):
     print(f"Fetching data from {url}")
-    await asyncio.sleep(random.randint(1, 3))  # Simulates variable network delay
-    if random.choice([True, False]):  # Randomly simulate a network error
+    await asyncio.sleep(1)
+    if "2" in url: # simulate a network error with http://example.com/data2
         raise Exception("Network Error")
     return f"Data from {url}"
 
@@ -215,7 +214,11 @@ async def task(n):
     return n
 
 async def main():
-    tasks = [task(1), task(2), task(3)]
+    tasks = [
+        asyncio.create_task(task(1)), 
+        asyncio.create_task(task(2)), 
+        asyncio.create_task(task(3))
+    ]
     done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
     for d in done:
@@ -226,7 +229,6 @@ async def main():
         p.cancel()
 
 asyncio.run(main())
-
 ```
 
 ### asyncio.wait_for
@@ -317,6 +319,44 @@ async def main():
     result = await future
     print(result)
 
+asyncio.run(main())
+```
+
+## Cancelling Tasks
+
+Suppose you have a task that periodically checks for updates on a server. You want this task to run indefinitely, but you also want the ability to cancel it under certain conditions (e.g., when shutting down your application or when it's no longer needed).
+
+```python
+import asyncio
+
+async def check_updates(interval):
+    try:
+        while True:
+            # Simulate a task that checks for updates
+            print("Checking for updates...")
+            await asyncio.sleep(interval)
+    except asyncio.CancelledError:
+        print("Update check has been cancelled")
+        # Perform any cleanup here
+        raise
+
+async def main():
+    # Create the task
+    update_task = asyncio.create_task(check_updates(0.75))
+
+    # Run the task for a while
+    await asyncio.sleep(3)
+
+    # Cancel the task
+    update_task.cancel()
+
+    try:
+        # Wait for the cancellation to complete
+        await update_task
+    except asyncio.CancelledError:
+        print("Main: The update task was cancelled")
+
+# Run the main coroutine
 asyncio.run(main())
 ```
 
@@ -505,3 +545,11 @@ async def main():
     async for item in async_generator():
         print(item)
 ```
+
+## Streams 
+
+todo
+
+## Subprocesses
+
+todo
