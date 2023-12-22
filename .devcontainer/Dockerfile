@@ -13,6 +13,7 @@ RUN apt -qq update && \
         bash-completion \
         curl \
         git \
+        iputils-ping \
         nano \
         openssh-client \
         python-is-python3 \
