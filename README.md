@@ -32,6 +32,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Mapping](guide/containers/mapping.md)
   - [Sets](guide/containers/sets.md)
   - [Comprehensions](guide/containers/comprehensions.md)
+  - [Unpacking](guide/containers/unpacking.md)
   - [Generators and Iterators](guide/containers/iterators_and_generators.md)
   - [Array](guide/containers/array.md)
 - [Object Oriented Programming (OOP)](guide/oop/_index.md)
@@ -63,6 +64,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Global Interpreter Lock (GIL)](guide/concurrency/gil.md)
   - [Threading Module](guide/concurrency/threading.md)
   - [Asyncio Module](guide/concurrency/asyncio.md)
+  - [Multiprocessing Module](guide/concurrency/multiprocessing.md)
 - TODO
   - Data Handling
   - Extentions
