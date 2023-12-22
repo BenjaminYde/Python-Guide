@@ -360,6 +360,97 @@ async def main():
 asyncio.run(main())
 ```
 
+## Using async with
+
+The `async with` statement in Python, introduced in Python 3.5, is part of the asynchronous programming features of the language. It is used to work with asynchronous context managers, which are similar to regular (synchronous) context managers but designed for use in 
+asynchronous code.
+
+### Asynchronous Context Managers
+
+An asynchronous context manager is an object that defines `__aenter__` and `__aexit__` methods to set up and tear down resources asynchronously. These methods are coroutines and must be defined with the async def syntax.
+
+- `__aenter__`: This coroutine is called when entering the context (the block of code after the async with statement). It performs setup actions and returns an object (if needed) for use within the context.
+
+- `__aexit__`: This coroutine is called when exiting the context. It handles cleanup actions. It accepts three arguments: exc_type, exc_value, and traceback, which describe an exception that occurred in the block if any.
+
+### Using async with
+
+The `async with` statement is used in asynchronous functions (defined with `async def`) to manage resources asynchronously. It ensures that the setup and cleanup code is executed, even if an exception occurs within the block.
+
+Syntax:
+
+```python
+async with expression as variable:
+    # Asynchronous operations
+```
+
+Example:
+
+Here's an example of using `async with` with an asynchronous file I/O operation:
+
+```python
+import aiofiles
+
+async def read_file_async(filename):
+    async with aiofiles.open(filename, 'r') as file:
+        return await file.read()
+```
+
+### Creating a Custom Asynchronous Context Manager
+
+First, we'll define an asynchronous context manager class for a hypothetical database connection:
+
+```python
+import asyncio
+
+class AsyncDatabaseConnection:
+    def __init__(self, db_name):
+        self.db_name = db_name
+
+    async def connect(self):
+        # Simulate an asynchronous connection to a database
+        await asyncio.sleep(1)
+        print(f"Connected to database: {self.db_name}")
+
+    async def close(self):
+        # Simulate closing the database connection
+        await asyncio.sleep(1)
+        print(f"Connection to {self.db_name} closed")
+
+    async def __aenter__(self):
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.close()
+```
+
+In this class:
+
+connect and close methods simulate asynchronous operations to open and close a database connection.
+
+- `__aenter__` method establishes the connection.
+- `__aexit__` method closes the connection, ensuring proper cleanup.
+
+Now, let's use this context manager in an asynchronous function:
+
+```python
+async def use_database(db_name):
+    async with AsyncDatabaseConnection(db_name) as db_conn:
+        # Perform database operations here
+        print(f"Using {db_conn.conn}")
+        await asyncio.sleep(2)  # Simulate a database operation
+
+# Run the async function
+asyncio.run(use_database("MyDatabase"))
+```
+
+Explantation:
+
+- When the `async with` `AsyncDatabaseConnection("MyDatabase")` line is executed, it calls the `__aenter__` method of `AsyncDatabaseConnection`, which establishes a connection to the database.
+- The block of code within the `async with` statement represents operations you might perform with the database connection.
+- Once this block is executed (or if an exception occurs), the `__aexit__` method is automatically called, closing the database connection.
+
 ## Synchronization Primitives
 
 In `asyncio`, synchronization primitives are used to manage access to shared resources and coordinate the execution of coroutines in a concurrent environment. These primitives are essential for preventing race conditions and ensuring data consistency when multiple coroutines access or modify shared data. Let's explore some of the key synchronization primitives provided by `asyncio`.
@@ -548,8 +639,183 @@ async def main():
 
 ## Streams 
 
-todo
+Streams in `asyncio` provide an abstraction for working with network IO. They allow you to write asynchronous code for handling network connections, such as reading from and writing to sockets, without directly dealing with the lower-level details of the protocol.
+
+Streams are particularly useful for developing network applications where you need to handle multiple connections efficiently.
+
+### Core Concepts of asyncio Streams
+
+The main classes used in `asyncio` streams are `StreamReader` and `StreamWriter`. 
+`StreamReader` is used for reading data from a stream, while `StreamWriter` is for writing data to a stream.
+
+`TCP` and `UDP`: asyncio supports both TCP (reliable, connection-oriented protocol) and UDP (unreliable, connectionless protocol) streams.
+
+### Creating a TCP Server
+
+You can use `asyncio.start_server` to create an asynchronous TCP server. This server will handle incoming connections and can read from and write to these connections.
+
+Example:
+```python
+import asyncio
+from asyncio import StreamReader, StreamWriter
+
+async def server_handle_client(reader: StreamReader, writer: StreamWriter):
+    # Wait for message from a client
+    data = await reader.read(100)  # Read up to 100 bytes
+    message = data.decode('utf8')
+    address = writer.get_extra_info('peername')
+    print(f"Server: Received {message} from {address}")
+
+    # Send a response to the client
+    print("Server: Sending response to client...")
+    new_message = "Sever is termenating..."
+    new_data = new_message.encode('utf8')
+    writer.write(new_data)
+    await writer.drain()
+
+    # Close the connection
+    writer.close()
+
+async def main():
+    server = await asyncio.start_server(server_handle_client, '127.0.0.1', 8888)
+
+    async with server:
+        await server.serve_forever()
+
+asyncio.run(main())
+```
+
+In this example, asyncio.start_server is used to create a server that listens on localhost (`127.0.0.1`) on port `8888`. For each client connection, `server_handle_client` coroutine is called with `StreamReader` and `StreamWriter` instances.
+
+### Creating a TCP Client
+
+To create a TCP client that connects to a server, use `asyncio.open_connection`. This returns `StreamReader` and `StreamWriter` objects for communication with the server.
+
+Example:
+
+
+```python
+import asyncio
+
+async def tcp_echo_client():
+    # Connect to the server
+    await asyncio.sleep(1)  # Give the server time to start
+    reader, writer = await asyncio.open_connection(addres, port)
+
+    # Send a message to the server
+    print("Client: Sending message...")
+    message = 'Hello World!'
+    writer.write(message.encode('utf8'))
+    await writer.drain()
+
+    # Receive a response
+    data = await reader.read(100)
+    print(f"Client: Reveived from Server: {data.decode('utf8')}")
+
+    # Close the connection
+    writer.close()
+    await writer.wait_closed()
+
+asyncio.run(tcp_echo_client())
+```
+
+In this client example, `asyncio.open_connection` is used to connect to the server running on `127.0.0.1:8888`. The client sends a message, waits for a response, and then closes the connection.
+
+### Handling UDP
+
+For UDP, `asyncio` provides the `loop.create_datagram_endpoint` method to create a datagram endpoint for sending and receiving UDP packets.
+
+Example:
+
+```python
+import asyncio
+
+class EchoUDP(asyncio.DatagramProtocol):
+    def datagram_received(self, data, address):
+        print(f"Received {data.decode()} from {address}")
+        self.transport.sendto(data, address)
+
+async def main():
+    loop = asyncio.get_running_loop()
+
+    # One protocol instance will be created to serve all client requests
+    transport, protocol = await loop.create_datagram_endpoint(
+        lambda: EchoUDP(),
+        local_address=('127.0.0.1', 9999))
+
+    await asyncio.sleep(3600)  # Serve for 1 hour
+
+    transport.close()
+
+asyncio.run(main())
+```
+
+In this UDP example, an instance of `EchoUDP`, which is a subclass of `asyncio.DatagramProtocol`, is created. This server listens on `127.0.0.1:9999` and echoes back any data it receives.
 
 ## Subprocesses
 
-todo
+`asyncio` subprocesses are a feature of the `asyncio` library in Python that allows you to run and interact with external processes asynchronously. This is particularly useful for executing shell commands, running external programs, and handling their input/output without blocking the main asyncio event loop.
+
+### Core Features
+
+- **Non-blocking Operations**: asyncio subprocess functions are non-blocking and don't freeze the asyncio event loop while waiting for the subprocess to complete.
+
+- **Asynchronous Communication**: You can asynchronously communicate with a subprocess through its standard input, output, and error streams.
+
+- **Integration with asyncio Tasks**: Subprocesses can be managed as asyncio tasks, which allows them to fit neatly into the asyncio framework of coroutines and event loops.
+
+### Creating and Managing Subprocesses
+
+`asyncio.create_subprocess_exec`: Runs a program specified by a series of arguments. More secure and often preferable for running known programs.
+
+```python
+process = await asyncio.create_subprocess_exec(
+    'ls', '-l',
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE)
+```
+
+`asyncio.create_subprocess_shell`: Runs a command specified as a single string through the shell. More convenient for complex commands, but less secure due to shell injection risks.
+
+```python
+process = await asyncio.create_subprocess_shell(
+    'ls -l | grep test',
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE)
+```
+
+### Example: Asynchronous Ping to Multiple Hosts
+
+We'll write a coroutine that pings a given host and reports back the result. Then, we'll use this coroutine to ping several hosts concurrently.
+
+```python
+import asyncio
+
+async def ping(host):
+    # Build the ping command
+    cmd = f'ping -c 1 -W 1 {host}' # try 1x, max wait time 1 sec
+
+    # Start the subprocess
+    process = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    # Wait for the subprocess to finish
+    stdout, stderr = await process.communicate()
+
+    if process.returncode == 0:
+        # Success, the host is reachable
+        print(f"Host {host} is reachable")
+    else:
+        # An error occurred, the host might be unreachable
+        print(f"Host {host} is unreachable")
+        if stderr:
+            print(f"Error: {stderr.decode().strip()}")
+
+async def main():
+    hosts = ["8.8.8.8", "192.168.1.1", "github.com"]
+    await asyncio.gather(*(ping(host) for host in hosts))
+
+asyncio.run(main())
+```
