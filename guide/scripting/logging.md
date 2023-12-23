@@ -77,6 +77,8 @@ Key points about formatters:
 
 ## Basic Logging
 
+### Creating a Logger
+
 You can start logging by importing the module and using basic functions:
 
 ```python
@@ -101,6 +103,72 @@ The second time this is called it will have no effect:
 
 ```python
 logging.basicConfig(level=logging.INFO)
+```
+
+### Creating a Handler
+
+Setting up 2 log handlers:
+
+```python
+# Continue from the logger example above
+
+# Create handlers
+console_handler = logging.StreamHandler()  # Log to console
+file_handler = logging.FileHandler('app.log')  # Log to a file
+
+# Set level for handlers
+console_handler.setLevel(logging.DEBUG)
+file_handler.setLevel(logging.ERROR)
+
+# Add handlers to logger
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+```
+
+Now we can start logging:
+
+```python
+# These messages will go to different destinations depending on their level
+logger.debug('DEBUG: This will go to console')
+logger.warning('WARNING: This will go to console')
+logger.error('ERROR: This will go to both console and file')
+```
+
+### Creating a Filter
+
+Let's say we want to exclude debug logs:
+
+```python
+# Continue from the logger and handler examples above
+
+# Define a filter
+class NoDebugFilter(logging.Filter):
+    def filter(self, record) -> bool:
+        # Only allow log messages that are not DEBUG
+        return record.levelno != logging.DEBUG
+
+# Add filter to console handler
+console_handler.addFilter(NoDebugFilter())
+
+# Now, DEBUG messages won't be printed to the console
+logger.debug('DEBUG: This debug message will not be shown in the console')
+logger.warning('WARNING: This debug message will not be shown in the console')
+```
+
+### Formatting Our Messages
+
+```python
+# Continue from the logger, handler, and filter examples above
+
+# Create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Add formatter to handlers
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Now, log messages will include the timestamp, logger name, level, and message
+logger.info('This info message will have a specific format in console and file')
 ```
 
 ## Logging to a File

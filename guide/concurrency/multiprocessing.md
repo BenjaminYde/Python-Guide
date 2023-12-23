@@ -80,6 +80,37 @@ def run():
 run()
 ```
 
+### Daemon Processes
+
+Daemon processes are processes that run in the background.
+
+- **Non-blocking**: A daemon process does not block the main program from exiting and is killed once all non-daemon processes have completed.
+- **Usage**: Useful for background tasks that do not need to keep the program running.
+
+```python
+from multiprocessing import Process
+import time
+
+def daemon_process():
+    while True:
+        print("Daemon process running...")
+        time.sleep(1)
+
+def run():
+    d = Process(target=daemon_process)
+    d.daemon = True
+    d.start()
+
+    # Main process runs for a few seconds
+    time.sleep(5)
+
+run()
+```
+
+Example Explained:
+
+The example starts a daemon process that runs a while loop to print a message every second. Since it's a daemon process, it will stop when the main program (which only sleeps for 5 seconds) exits.
+
 ### Common Methods & Properties
 
 #### Methods:
@@ -153,23 +184,173 @@ A `Pipe` allows for bidirectional communication between two processes. When a Pi
 
 - **Corruption Risk**: It's crucial to avoid having two processes writing to or reading from the same end of the pipe at the same time, as this could lead to data corruption.
 
+- **Creation**: Pipes are created using `multiprocessing.Pipe()`. This returns a pair of Connection objects representing the ends of the pipe.
+
+- **Types**: Pipes can be duplex (two-way communication) or half-duplex (one-way communication). In duplex mode, both ends can send and receive messages. In half-duplex, one end can only send messages, and the other can only receive.
+
+- **Blocking**: Pipe operations can be blocking. The send operation blocks if the pipe's buffer is full, and recv blocks until there is something to read.
+
 Example:
 
 ```python
 from multiprocessing import Process, Pipe
+from multiprocessing.connection import Connection
 
-def worker(conn):
-    conn.send("Hello from the child process!")
-    conn.close()
+def worker(connection: Connection):
+    connection.send("Hello from the child process!")
+    connection.close()
 
 def run():
-    parent_conn, child_conn = Pipe()
-    p = Process(target=worker, args=(child_conn,))
+    parent_connection, child_connection = Pipe()
+    p = Process(target=worker, args=(child_connection,))
     p.start()
-    print(parent_conn.recv())  # Prints the message from the child process
+    print(parent_connection.recv())  # Prints the message from the child process
     p.join()
 
 run()
+```
+
+## Shared Memory Objects
+
+In `multiprocessing`, shared memory objects allow processes to share data. This is essential for communication and state sharing between processes.
+
+### Unique Memory Space
+
+When working with Python's `multiprocessing` module, one important concept to understand is that global variables do not behave as they might in a single-process program. 
+
+- **Separate Processes**: In multiprocessing, each process is an independent instance of the Python interpreter. Each process has its own memory space, which means that global variables are not shared between them.
+
+- **Global Variables**: If you define a global variable and then modify it in a child process, the modification will only be visible within that child process. The parent process and other child processes will not see this change.
+
+Example:
+
+```python
+from multiprocessing import Process
+
+# A global variable
+counter = 0
+
+def increment():
+    global counter
+    counter += 1
+    print(f"Counter in child process: {counter}")
+
+def run():
+    p = Process(target=increment)
+    p.start()
+    p.join()
+
+    print(f"Counter in main process: {counter}")
+
+run()
+```
+
+Output:
+
+```
+Counter in child process: 1
+Counter in child process: 0
+```
+
+### Value and Array
+
+- These are the simplest ways to share data between processes.
+- Value is used for a single simple data type, while Array is used for multiple values of a standard type.
+- Both are synchronized and can be used safely by multiple processes.
+
+Example:
+
+```python
+from multiprocessing import Process, Value, Array
+
+def update_shared_value(shared_value, shared_array):
+    # Increment the shared value and each element of the shared array
+    shared_value.value += 1
+    for i in range(len(shared_array)):
+        shared_array[i] += 1
+
+def run():
+    # Create a shared integer with initial value 0
+    shared_value = Value('i', 0)
+
+    # Create a shared array of integers initialized with values 0 to 4
+    shared_array = Array('i', range(5))
+
+    # Create and start 4 processes
+    # Each process will update the shared value and array
+    processes = [Process(target=update_shared_value, args=(shared_value, shared_array)) for _ in range(4)]
+    for p in processes:
+        p.start()
+
+    # Wait for all processes to complete
+    for p in processes:
+        p.join()
+
+    # Print the final value of the shared integer and array
+    print(f"Shared Value: {shared_value.value}")
+    print(f"Shared Array: {list(shared_array)}")
+
+run()
+```
+
+Output:
+
+```
+Shared Value: 4
+Shared Array: [4, 5, 6, 7, 8]
+```
+
+### Manager
+
+- Used for creating shared objects of more complex data types like lists, dictionaries, etc.
+- Slower than Value and Array but more flexible.
+
+Example:
+
+```python
+from multiprocessing import Process, Manager
+
+def adder(shared_list):
+    # Adds data to the shared list
+    for i in range(5):
+        shared_list.append(i)
+    print("Adder: Added numbers 0-4 to the list.")
+
+def modifier(shared_list):
+    # Modifies data in the shared list
+    for i in range(5):
+        shared_list[i] = shared_list[i] * 2
+    print("Modifier: Doubled the numbers in the list.")
+
+def run():
+    # Using Manager to create a shared list
+    manager = multiprocessing.Manager()
+    shared_list = manager.list()
+
+    # Creating two processes
+    p1 = multiprocessing.Process(target=adder, args=(shared_list,))
+    p2 = multiprocessing.Process(target=modifier, args=(shared_list,))
+
+    # Starting the processes
+    p1.start()
+    p1.join()  # Wait for p1 to finish before starting p2
+
+    p2.start()
+    p2.join()  # Wait for p2 to finish
+
+    # Accessing the modified list in the main process
+    print(f"Final list: {list(shared_list)}")
+
+
+run()
+```
+
+Output:
+
+```
+Adder: Added numbers 0-4 to the list.
+Modifier: Doubled the numbers in the list.
+Final list: [0, 2, 4, 6, 8]
 ```
 
 ## Synchronization
@@ -209,6 +390,11 @@ Example Explained:
 
 The example demonstrates using a lock to synchronize access to a print operation, which is a shared resource in this context. Each process acquires the lock before printing and releases it afterward, ensuring orderly access to the standard output.
 
+#### Methods:
+
+- `acquire(blocking=True, timeout=-1)`: Acquires the lock. If blocking is False and the lock cannot be acquired immediately, it returns False.
+- `release()`: Releases the lock.
+
 ### Event
 
 An `Event` is a simple synchronization object; its primary purpose is to signal between processes. One process signals an event and other processes wait for it.
@@ -247,6 +433,13 @@ def run():
 
 run()
 ```
+
+#### Methods:
+
+- `set()`: Sets the event, waking up all the processes waiting for it.
+- `clear()`: Resets the event. Processes that call wait() once the event is cleared will block.
+- `wait(timeout=None)`: Blocks until the event is set. If timeout is provided, it will block for at most timeout seconds.
+- `is_set()`: Returns True if the event is set, False otherwise.
 
 ### Condition
 
@@ -288,6 +481,15 @@ def run():
 run()
 ```
 
+#### Methods
+
+- `acquire(*args)`: Acquires the underlying lock.
+- `release()`: Releases the underlying lock.
+- `wait(timeout=None)`: Wait until notified or until a timeout occurs.
+- `wait_for(predicate, timeout=None)`: Wait until a condition or timeout. Predicate should be a callable which result will be evaluated in a boolean context.
+- `notify(n=1)`: Wake up one or more processes waiting on this condition, if any.
+- `notify_all()`:Wake up all processes waiting on this condition.
+
 ### Semaphore
 
 A Semaphore is used to control access to a common resource by multiple processes and is often used to enforce a limit on the number of processes that can access the particular resource.
@@ -321,6 +523,11 @@ def run():
 run()
 ```
 
+#### Methods
+
+- `acquire(blocking=True, timeout=None)`: Acquire a semaphore.
+- `release()`: Release a semaphore, incrementing the internal counter by one.
+
 ### Barrier
 
 A Barrier is a synchronization primitive that is used to make a set of processes wait until a certain condition is met.
@@ -353,6 +560,18 @@ def run():
 
 run()
 ```
+
+#### Methods
+
+- `wait(timeout=None)`: Wait for the barrier. When all the threads or processes have called this method, they are all released. If a timeout is provided, it will only wait for this time.
+- `abort()`: Put the barrier into a broken state.
+- `reset()`: Reset the barrier to the default empty state.
+
+#### Properties
+
+- `parties`: The number of processes that need to call wait() before the barrier is passed.
+- `n_waiting`: The number of processes currently waiting at the barrier.
+- `broken`: A boolean, True if the barrier is in a broken state.
 
 ## Worker Pools
 
@@ -472,100 +691,6 @@ Example Explanation:
 - `_result_handler`:
   - Handles the processing of the results of the tasks executed by the pool.
   - Internally used for managing how results are fetched and callbacks are invoked.
-
-## Daemon Processes
-
-Daemon processes are processes that run in the background.
-
-- **Non-blocking**: A daemon process does not block the main program from exiting and is killed once all non-daemon processes have completed.
-- **Usage**: Useful for background tasks that do not need to keep the program running.
-
-```python
-from multiprocessing import Process
-import time
-
-def daemon_process():
-    while True:
-        print("Daemon process running...")
-        time.sleep(1)
-
-def run():
-    d = Process(target=daemon_process)
-    d.daemon = True
-    d.start()
-
-    # Main process runs for a few seconds
-    time.sleep(5)
-
-run()
-```
-
-Example Explained:
-
-The example starts a daemon process that runs a while loop to print a message every second. Since it's a daemon process, it will stop when the main program (which only sleeps for 5 seconds) exits.
-
-## Shared Memory Objects
-
-In multiprocessing, shared memory objects allow processes to share data. This is essential for communication and state sharing between processes.
-
-### Value and Array
-
-- These are the simplest ways to share data between processes.
-- Value is used for a single simple data type, while Array is used for multiple values of a standard type.
-- Both are synchronized and can be used safely by multiple processes.
-
-Example:
-
-```python
-from multiprocessing import Process, Value, Array
-
-def update_shared_value(shared_value, shared_array):
-    shared_value.value += 1
-    for i in range(len(shared_array)):
-        shared_array[i] += 1
-
-def run():
-    shared_value = Value('i', 0)  # Integer shared between processes
-    shared_array = Array('i', range(5))  # Array shared between processes
-
-    processes = [Process(target=update_shared_value, args=(shared_value, shared_array)) for _ in range(4)]
-    for p in processes:
-        p.start()
-    for p in processes:
-        p.join()
-
-    print(shared_value.value)
-    print(shared_array[:])
-
-run()
-```
-
-### Manager
-
-- Used for creating shared objects of more complex data types like lists, dictionaries, etc.
-- Slower than Value and Array but more flexible.
-
-Example:
-
-```python
-from multiprocessing import Process, Manager
-
-def append_to_shared_list(shared_list, data):
-    shared_list.append(data)
-
-def run():
-    with Manager() as manager:
-        shared_list = manager.list()
-        processes = [Process(target=append_to_shared_list, args=(shared_list, i)) for i in range(5)]
-        for p in processes:
-            p.start()
-        for p in processes:
-            p.join()
-
-        print(list(shared_list))
-
-run()
-```
 
 ## Contexts and start methods
 
