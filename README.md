@@ -5,7 +5,7 @@ The guide intends to be **to the point** so you can continue what really matters
 
 # Execute Code Examples 🚀
 
-Explore the `examples` directory for **interactive Python** code examples, easily executable in Jupyter Notebooks using a **Docker DevContainer** within **Visual Studio Code**. This setup ensures a consistent and streamlined coding environment, ideal for learning and experimentation.
+Explore the `examples` directory for **interactive Python** code examples, easily executable in **Jupyter Notebooks** using a **Docker DevContainer** within **Visual Studio Code**. This setup ensures a consistent and streamlined coding environment, ideal for learning and experimentation.
 
 # Guide Index 🗂️
 
