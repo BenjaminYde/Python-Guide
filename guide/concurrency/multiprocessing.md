@@ -111,6 +111,54 @@ Example Explained:
 
 The example starts a daemon process that runs a while loop to print a message every second. Since it's a daemon process, it will stop when the main program (which only sleeps for 5 seconds) exits.
 
+## Logging with multiprocessing
+
+In multiprocessing and multithreading environments in Python, it is considered best practice to use the `logging` module for output and debugging information, primarily because it is thread-safe.
+
+The logging module is preferred in Python for several reasons:
+
+- **Thread-Safety**: It safely manages logs from multiple threads or processes, preventing issues like mixed-up messages.
+
+- **Consistent Format**: Log messages have a uniform format, making it easier to read and understand logs from different sources.
+
+- **Customizable**: You can tailor log message formats, filters, and destinations to suit your needs, important for complex applications.
+
+- **Severity Levels**: Supports levels like DEBUG, INFO, etc., helping you control the detail of logging for debugging.
+
+- **Centralized Configuration**: Allows setting up logging configurations in one place for an entire application, simplifying log management.
+
+Example:
+
+```python
+import logging
+import multiprocessing
+import time
+
+def worker_process():
+    logger = multiprocessing.get_logger()
+    logger.info("Worker process is starting.")
+    time.sleep(2)
+    logger.info("Worker process is finishing.")
+
+def setup_logging():
+    logger = multiprocessing.log_to_stderr()
+    logger.setLevel(logging.INFO)
+
+def run():
+    setup_logging()
+
+    processes = []
+    for _ in range(3):
+        p = multiprocessing.Process(target=worker_process)
+        processes.append(p)
+        p.start()
+
+    for p in processes:
+        p.join()
+
+run()
+```
+
 ### Common Methods & Properties
 
 #### Methods:
@@ -745,7 +793,3 @@ def run():
 
 run()
 ```
-
-## Logging with multiprocessing
-
-todo
