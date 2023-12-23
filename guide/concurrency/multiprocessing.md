@@ -111,6 +111,39 @@ Example Explained:
 
 The example starts a daemon process that runs a while loop to print a message every second. Since it's a daemon process, it will stop when the main program (which only sleeps for 5 seconds) exits.
 
+### Common Methods & Properties
+
+#### Methods:
+
+- `start()`: 
+  - Starts the process’s activity. 
+  - This must be called at most once per process object.
+  - It arranges for the object’s `run()` method to be invoked in a separate process.
+- `run()`:
+  - Process Activity: Method representing the process’s activity.
+  - You may override this method in a subclass.
+- `terminate()`:
+  - This method is used to stop the process forcibly.
+- `join()`:
+  - Wait for Process to Finish: Blocks until the process whose join() method is called terminates or until the optional timeout occurs.
+  - Useful for process synchronization.
+- `is_alive()`:
+  - Check Process Status: Returns True if the process is still running.
+
+#### Properties:
+
+- `daemon`:
+  - boolean value indicating whether this process should be a daemon process.
+  - Daemon processes are abruptly stopped when the program exits.
+- `pid`:
+  - Returns the process ID.
+  - Useful when you need to perform operations outside Python or monitor specific processes.
+- `exitcode`:
+  - Exit Code of the Process: The child’s exit code. A None value indicates that the process hasn’t terminated yet.
+  - A negative value -N indicates that the child was terminated by signal N.
+- `name`: 
+  - The process name, used for identification purposes only.
+
 ## Logging with multiprocessing
 
 In multiprocessing and multithreading environments in Python, it is considered best practice to use the `logging` module for output and debugging information, primarily because it is thread-safe.
@@ -158,39 +191,6 @@ def run():
 
 run()
 ```
-
-### Common Methods & Properties
-
-#### Methods:
-
-- `start()`: 
-  - Starts the process’s activity. 
-  - This must be called at most once per process object.
-  - It arranges for the object’s `run()` method to be invoked in a separate process.
-- `run()`:
-  - Process Activity: Method representing the process’s activity.
-  - You may override this method in a subclass.
-- `terminate()`:
-  - This method is used to stop the process forcibly.
-- `join()`:
-  - Wait for Process to Finish: Blocks until the process whose join() method is called terminates or until the optional timeout occurs.
-  - Useful for process synchronization.
-- `is_alive()`:
-  - Check Process Status: Returns True if the process is still running.
-
-#### Properties:
-
-- `daemon`:
-  - boolean value indicating whether this process should be a daemon process.
-  - Daemon processes are abruptly stopped when the program exits.
-- `pid`:
-  - Returns the process ID.
-  - Useful when you need to perform operations outside Python or monitor specific processes.
-- `exitcode`:
-  - Exit Code of the Process: The child’s exit code. A None value indicates that the process hasn’t terminated yet.
-  - A negative value -N indicates that the child was terminated by signal N.
-- `name`: 
-  - The process name, used for identification purposes only.
 
 ## Inter-Process Communication (IPC)
 
