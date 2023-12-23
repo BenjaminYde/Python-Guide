@@ -3,6 +3,10 @@
 This repository is a Python guide designed which is designed to be easily opened using VS Code or Github. It contains extensive documentation, code examples, and best practices to help you become a proficient Python programmer. 
 The guide intends to be **to the point** so you can continue what really matters, programming.
 
+# Execute Code Examples 🚀
+
+Explore the `examples` directory for **interactive Python** code examples, easily executable in Jupyter Notebooks using a **Docker DevContainer** within **Visual Studio Code**. This setup ensures a consistent and streamlined coding environment, ideal for learning and experimentation.
+
 # Guide Index 🗂️
 
 **The following index contains categories with topics that are ready for visibility or completed.**  
