@@ -65,6 +65,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Threading Module](guide/concurrency/threading.md)
   - [Asyncio Module](guide/concurrency/asyncio.md)
   - [Multiprocessing Module](guide/concurrency/multiprocessing.md)
+  - [Concurrent Module](guide/concurrency/concurrent.md)
 - TODO
   - Data Handling
   - Extentions
