@@ -10,11 +10,13 @@ The `multiprocessing` module in Python allows for the execution of multiple proc
 
 - **Concurrent Execution**: Running multiple operations that are independent of each other and can be executed simultaneously, such as batch processing tasks.
 
-## What is a Process?
+## Processes
+
+### What is a Process?
 
 A **process** is an independent instance of a Python interpreter. The multiprocessing module provides an API similar to the threading module but uses processes instead of threads. This bypasses the Global Interpreter Lock (GIL) and allows full parallelism.
 
-### Advantages:
+#### Advantages:
 
 - **True Parallelism**: Each process runs in its own Python interpreter and memory space, enabling parallel CPU computation.
 
@@ -22,13 +24,13 @@ A **process** is an independent instance of a Python interpreter. The multiproce
 
 - **Improved Stability**: A crash in one process does not affect other processes.
 
-### Disadvantages:
+#### Disadvantages:
 
 - **Higher Overhead**: Processes are heavier than threads and consume more system resources.
 
 - **Inter-process Communication**: Communication between processes is more complex and requires serialization (e.g., using queues or pipes).
 
-## Creating a Process
+### Creating a Process
 
 To create a new process, use the `Process` class from the `multiprocessing` module.
 
@@ -53,7 +55,7 @@ process.join()
 print("Process finished execution.")
 ```
 
-## Terminating Processes
+### Terminating Processes
 
 Sometimes it's necessary to terminate a process forcibly, especially if it's stuck or misbehaving. Use `process.terminate()` to stop a process. It's abrupt and should be used carefully.
 
@@ -78,6 +80,38 @@ def run():
 run()
 ```
 
+### Common Methods & Properties
+
+#### Methods:
+
+- `start()`: 
+  - Starts the process’s activity. 
+  - This must be called at most once per process object.
+  - It arranges for the object’s `run()` method to be invoked in a separate process.
+- `run()`:
+  - Process Activity: Method representing the process’s activity.
+  - You may override this method in a subclass.
+- `terminate()`:
+  - This method is used to stop the process forcibly.
+- `join()`:
+  - Wait for Process to Finish: Blocks until the process whose join() method is called terminates or until the optional timeout occurs.
+  - Useful for process synchronization.
+- `is_alive()`:
+  - Check Process Status: Returns True if the process is still running.
+
+#### Properties:
+
+- `daemon`:
+  - boolean value indicating whether this process should be a daemon process.
+  - Daemon processes are abruptly stopped when the program exits.
+- `pid`:
+  - Returns the process ID.
+  - Useful when you need to perform operations outside Python or monitor specific processes.
+- `exitcode`:
+  - Exit Code of the Process: The child’s exit code. A None value indicates that the process hasn’t terminated yet.
+  - A negative value -N indicates that the child was terminated by signal N.
+- `name`: 
+  - The process name, used for identification purposes only.
 
 ## Inter-Process Communication (IPC)
 
@@ -319,33 +353,125 @@ def run():
 
 run()
 ```
-## Process Pool
 
-The Process `Pool` object is used to manage a pool of worker processes. It provides methods to execute calls asynchronously.
+## Worker Pools
 
-- **Parallel Execution**: Distributes input data across processes (data parallelism).
+### What is a Worker Pool?
 
-- **Pool of Workers**: Manages a fixed number of workers to execute function calls asynchronously.
+A Worker Pool in the `multiprocessing` module is a group of worker processes that execute tasks asynchronously. It's created using the `Pool` class. A pool can be thought of as a way to parallelize the execution of a function across multiple input values, distributing the input data across processes (data parallelism).
 
-Example:
+### Key Features
+
+- **Parallel Execution**: The primary purpose of a Worker Pool is to run tasks in parallel across multiple processors, thus leveraging multiple cores of the CPU.
+
+- **Task Distribution**: The Pool automatically handles the distribution of tasks to the worker processes. When a task is completed by a worker, the Pool assigns a new task to that worker.
+
+- **Flexibility in Number of Workers**: You can specify the number of worker processes in the pool. If not specified, it defaults to the number of CPUs available on the machine.
+
+- **Asynchronous or Synchronous Execution**: The Pool provides methods for both asynchronous (apply_async) and synchronous (apply, map) task submission.
+
+- **Handling Results and Exceptions**: The Pool has mechanisms to collect results from the worker processes and to handle exceptions.
+
+### Example
+
+In this example, we'll use a pool to process a list of URLs to simulate downloading content from each URL in parallel. This example is hypothetical, focusing on the structure rather than actual network operations.
 
 ```python
 from multiprocessing import Pool
+import time
+import random
 
-def square(n):
-    return n * n
+# Dummy function to simulate processing a URL
+def process_url(url):
+    print(f"Processing {url}...")
+    time.sleep(2)  # Simulate time taken to process the URL
+    return f"Content of {url}"
 
 def run():
-    with Pool(4) as p:  # Pool of 4 processes
-        results = p.map(square, range(10))
-    print(results)
+    # List of dummy URLs
+    urls = [f"http://example.com/page{i}" for i in range(10)]
+    
+    # Create a Pool with 5 workers
+    with Pool(5) as p:
+        # Map the function 'process_url' to the URLs
+        results = p.map(process_url, urls)
+    
+    # Print the results
+    for result in results:
+        print(result)
 
 run()
 ```
 
-Example Explained:
+Example Explanation:
 
-The example shows using a pool of 4 processes to execute the `square` function in parallel. The `map` method applies the `square` function to each item in the range, distributing the work across the processes in the pool.
+1. **Creation of the Worker Pool**: 
+   - When you create a Pool with 5 workers (with Pool(5) as p:), you are initializing a pool of 5 worker processes. These processes are ready to run tasks in parallel.
+
+2. **Calling map Function**: 
+   - The line results = p.map(process_url, urls) is crucial. The map function is a synchronous operation. It will distribute the task of processing each URL (process_url function) across the worker processes in the pool.
+
+3. **Task Execution**:
+
+   - Each worker in the pool will pick up a task (in this case, a URL to process) from the list of URLs. Since you have 5 workers and 10 URLs, each worker will initially pick one URL and start processing it.
+   - The process_url function simulates a 2-second processing time for each URL (time.sleep(2)).
+
+4. **Synchronous Processing**:
+
+   - The map function will block (i.e., wait) until all the URLs are processed. This means the main thread, which is executing the run function, will wait at the map line until all URLs are processed by the worker processes.
+   - Even though the processing is happening in parallel across multiple processes, the map function collects all the results before moving on to the next line of code.
+
+5. **Completion and Result Collection**:
+
+   - Once all the URLs have been processed by the worker processes, the map function returns a list of results. This list (results) will contain the return values of process_url for each URL in the same order as the URLs were provided.
+   - The for loop at the end (for result in results:) then iterates over these results and prints them.
+
+6. **Timing**:
+
+   - Since there are 5 workers and 10 tasks, and each task takes 2 seconds, the total time to process all URLs will be around 4 seconds (2 batches of 5 URLs each, processed in parallel).
+   - However, this is an approximation and actual time may slightly vary depending on the system's resource allocation and scheduling.
+
+
+### Common Methods & Properties
+
+#### Methods:
+
+- `apply(func, args=(), kwds={})`: 
+  - Equivalent to func(*args, **kwds).
+  - This is a synchronous operation; the pool will block until the function is completed.
+- `apply_async(func, args=(), kwds={}, callback=None, error_callback=None)`:
+  - Asynchronous version of apply().
+  - Returns a result object and does not block the calling thread. Callbacks can be executed when the function completes.
+- `map(func, iterable, chunksize=None)`:
+  - A parallel equivalent of the built-in map() function. It blocks until the result is ready.
+  - Distributes the workload across the pool's worker processes.
+- `map_async(func, iterable, chunksize=None, callback=None, error_callback=None)`:
+  - Asynchronous version of map().
+  - Returns a result object immediately and executes callbacks when all operations are complete.
+- `close()`:
+  - Prevents any more tasks from being submitted to the pool.
+  - Once called, you cannot submit new tasks to this pool.
+- `terminate()`:
+  - Stops all worker processes immediately without completing outstanding work.
+  - It should be used with caution as it does not allow processes to clean up properly.
+- `join()`:
+  - Wait for all the worker processes to exit.
+  - Must be called after close() or terminate() to ensure that all processes have completed.
+
+#### Properties:
+
+- `_processes`:
+  - The number of worker processes in the pool.
+  - Useful for understanding the parallelism level of the pool.
+- `_state`:
+  - Indicates the current state of the pool (e.g., running, closed).
+  - Useful for checking the pool's status programmatically.
+- `_taskqueue`:
+  - A queue of tasks that are pending to be executed by the pool.
+  - Provides insight into the tasks that are waiting to be processed.
+- `_result_handler`:
+  - Handles the processing of the results of the tasks executed by the pool.
+  - Internally used for managing how results are fetched and callbacks are invoked.
 
 ## Daemon Processes
 
@@ -437,6 +563,60 @@ def run():
             p.join()
 
         print(list(shared_list))
+
+run()
+```
+
+## Contexts and start methods
+
+### Contexts
+
+A context in the `multiprocessing` module refers to the environment in which the processes are created. The context defines how exactly the process will be created and how it will communicate with the parent process. Different platforms (like Windows, macOS, and Linux) might have different default contexts.
+
+The context can be explicitly specified, which is particularly useful when you need behavior that is different from the default on your operating system. For instance, you can create a context that mimics the behavior of POSIX fork on a Windows system.
+
+### Start Methods
+
+The start method is the part of the context that actually initiates the process. There are typically three start methods available in Python:
+
+1. **fork:**
+
+- The default on Unix-like systems.
+- The child process is created as a copy of the parent process.
+- Fast start-up but can be problematic with multi-threaded programs.
+- Not available on Windows.
+
+2. **spawn:**
+
+- The default on Windows and an option on Unix-like systems.
+- The child process is started from scratch, running only the Python interpreter with the relevant code.
+- Safer and more compatible with different types of Python objects, but has a slower start-up time because it initializes a new Python interpreter.
+
+3. **forkserver (where available):**
+
+- When a program using multiprocessing starts and selects the forkserver start method, a server process is started.
+- New processes are created by asking this server process to fork a new process.
+- This can be safer than using fork directly, as the fork server process is single-threaded and therefore less likely to be in a problematic state when the fork happens.
+
+### Example
+
+Here's a basic example to demonstrate how you can set a start method in Python:
+
+```python
+import multiprocessing as mp
+
+def worker():
+    # Code for each worker process
+    pass
+
+def run():
+    # Set the start method (e.g., 'fork', 'spawn', or 'forkserver')
+    mp.set_start_method('spawn')
+
+    # Create and start a process
+    p = mp.Process(target=worker)
+    p.start()
+    p.join()
 
 run()
 ```
