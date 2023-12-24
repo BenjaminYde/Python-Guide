@@ -6,3 +6,4 @@ todo
 - pydantic
 - xml
 - pandas
+- numpy

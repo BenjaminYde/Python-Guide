@@ -70,10 +70,12 @@ Want to see what topics are in todo? See the **index per category**.
   - [Asyncio Module](guide/concurrency/asyncio.md)
   - [Multiprocessing Module](guide/concurrency/multiprocessing.md)
   - [Concurrent Module](guide/concurrency/concurrent.md)
+- [Networking](guide/networking/_index.md)
+  - [Introduction To Networking](guide/networking/introduction.md)
+  - [Sockets](guide/networking/sockets.md)
 - TODO
   - Data Handling
   - Extentions
-  - Libraries
   - Networking
   - Testing
   - Tooling
