@@ -149,62 +149,105 @@ In networking, data transmission methods are crucial in determining how informat
   - **Controlled Reception**: Only devices that have joined the multicast group will receive the data.
 - **Use Cases**: Common in streaming media (like IPTV), online gaming, and real-time applications where the same data needs to be delivered to multiple recipients.
 
-### Network Protocols:
-
-Rules and standards that define how data is transmitted and received.
-Common protocols include TCP/IP, HTTP, FTP, and SMTP.
-Network tunneling
-
 ## Understanding IP Addresses and Ports
 
 ### IP Addresses
 
-An IP address is a unique identifier assigned to each device on a network.
-There are two standards: IPv4 (e.g., 192.168.1.1) and IPv6 (e.g., 2001:db8::1).
-IP addresses enable devices to locate and identify each other on a network.
+An IP (Internet Protocol) address is a unique identifier assigned to each device on a network. It's akin to a postal address for computers, ensuring that data sent across a network reaches the correct destination.
 
-Pv4 Exhaustion and IP Address Allocation
-Challenges of IPv4 Exhaustion: Discussing the limitations of IPv4 and its impact on the Internet.
-IP Address Allocation: How IP addresses are allocated and managed globally.
+#### There are two types of IP addresses:
+
+- **IPv4**: Consists of four sets of numbers separated by periods, e.g., 192.168.1.1. It uses a 32-bit address space.
+
+- **IPv6**: Developed to deal with the shortage of IPv4 addresses. It uses 128-bit addressing, allowing for a significantly larger number of devices, and is represented in hexadecimal format, e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334.
+
+#### Types of IPv4 Addresses:
+
+- **Public vs Private**: 
+- Public IP addresses are globally unique and accessible over the internet, whereas private IP addresses are used within local networks (LANs) and are not directly accessible from the internet.
+- **Private Address Ranges**:
+  - `10.0.0.0 to 10.255.255.255 (10.x.x.x)`: Class A private range, used for large networks.
+  - `172.16.0.0 to 172.31.255.255 (172.x.x.x)`: Class B private range, used for medium-sized networks.
+  - `192.168.0.0 to 192.168.255.255 (192.x.x.x)`: Class C private range, commonly used in small networks like home LANs.
+
+Configuring your network to use one of the private IP ranges (`10.x.x.x`, `172.x.x.x`, or `192.x.x.x`) involves setting up your network devices (like routers and switches) and assigning IP addresses to your devices within those ranges.
 
 ### Ports
 
-A port is a virtual point where network connections start and end.
-Ports are identified by numbers (e.g., HTTP traffic typically uses port 80).
-They help differentiate between multiple services or applications running on the same device.
+In networking, a port is a virtual point where network connections start and end. Ports are associated with the IP address of the host and the type of protocol used for communication. They help to differentiate between multiple processes or services running on the same computer.
 
-- What ports are available
-- What ports can i use for my application
-- How do i know if another app is using this port
+There are a total of 65535 TCP and UDP ports available. Ports are divided into three ranges:
+- **Well-Known Ports**: 0 to 1023, reserved for well-known services:
+  - FTP: 20 (Data Transfer)
+  - SSH: 22, for secure shell access
+  - SMTP: 25, for email transmission
+  - HTTP: 80, for web traffic
+  - HTTPS: 443, for secure web traffic
+- **Registered Ports**: 1024 to 49151, can be registered for services.
+- **Dynamic or Private Ports**: 49152 to 65535, typically used for client-side communication.
 
 ### MAC Addresses
 
-**Definition and Role**: Explain what MAC addresses are and how they uniquely identify network interfaces.
-**Address Resolution Protocol (ARP)**: How MAC addresses are used in conjunction with IP addresses.
+A **MAC (Media Access Control)** address is a hardware identifier that uniquely identifies each device on a network. It's a physical address embedded into the network interface card (NIC) of the device and is used for network communication at the data link layer of the OSI model.
 
-TODO: go more in depth
+A MAC address is a 48-bit number, usually represented in hexadecimal format, e.g., 00:1A:C2:7B:00:47.
+Unlike IP addresses, which can change depending on the network, MAC addresses are usually fixed and unique to the device.
 
-## IPv4 vs. IPv6
+## Domain Name System (DNS)
 
-Differences and Advantages: Comparing IPv4 and IPv6, including addressing schemes, security features, and performance implications.
-Transition Mechanisms: Strategies for transitioning from IPv4 to IPv6 networks.
+The Domain Name System (DNS) is a critical component of the internet's infrastructure. It acts like a phonebook for the internet, translating human-readable domain names (like `www.example.com`) into machine-readable IP addresses (like 1`92.0.2.1`). This translation is essential because while domain names are easy for people to remember, computers and networks rely on IP addresses to locate and identify each other on the internet.
 
-### DNS and DHCP
+### How DNS Works:
 
-Domain Name System (DNS): Translating domain names to IP addresses.
-Dynamic Host Configuration Protocol (DHCP): Automatic assignment of IP addresses to devices on a network.
+1. **Query Initiation**: When you type a URL into your browser, your computer sends a DNS query to find the IP address associated with the domain name.
+2. **Recursive and Iterative Queries**: The query usually goes through several stages, moving from recursive to iterative queries, involving various DNS servers, including local DNS servers, root name servers, TLD (Top-Level Domain) name servers, and authoritative name servers.
+3. **Response**: The final authoritative DNS server returns the IP address of the domain, allowing your browser to establish a connection to the web server hosting the website.
+DNS is vital for the user-friendly navigation of the internet, making it possible to connect to websites without needing to memorize IP addresses.
 
-## Basic Network Security
+DNS is vital for the user-friendly navigation of the internet, making it possible to connect to websites without needing to memorize IP addresses.
 
-Network security involves measures to protect data during transmission and includes:
+## Dynamic Host Configuration Protocol (DHCP)
 
-Firewalls: Filtering incoming and outgoing network traffic.
-Encryption: Encoding data to prevent unauthorized access.
-Authentication Protocols: Ensuring only authorized users can access the network.
-Common Threats: Types of network attacks (e.g., DDoS, MITM, packet sniffing).
-Wi-Fi Security Protocols: Details about WEP, WPA, WPA2, and WPA3.
+DHCP stands for Dynamic Host Configuration Protocol. It is used on IP networks to automatically assign IP addresses and other network configuration parameters to devices (like computers, printers, etc.) so they can communicate on an IP network.
 
-## Network Redundancy and Load Balancing
+### How DHCP Works:
 
-Designing Redundant Networks: Techniques to ensure network availability and fault tolerance.
-Load Balancing Strategies: Methods for distributing network traffic across multiple servers.
+1. **IP Address Assignment**: When a device connects to a network (e.g., when you turn on your computer or connect to Wi-Fi), it broadcasts a request for an IP address.
+2. **DHCP Server Response**: A DHCP server on the network receives this request and assigns an available IP address from its pool of IPs, along with other network configuration details like subnet mask, default gateway, and DNS server addresses.
+3. **Lease Time**: The IP address is leased for a certain period. The device must renew the lease to keep using the IP address.
+
+### Static vs Dynamic IP Addresses
+
+- **Static IP Address**:
+  - Does not change.
+  - Manually configured and set on the device.
+  - Useful for servers or devices needing a constant IP address.
+
+- **Dynamic IP Address**:
+  - Assigned by a DHCP server and can change over time.
+  - Easier to manage, especially on large networks.
+  - Reduces the risk of IP address conflicts.
+
+### Network Protocols:
+
+Network protocols are sets of rules and standards that define how data is transmitted and received over a network. These protocols ensure that devices on a network can communicate effectively, regardless of their underlying architecture or design. Here's an overview of some very common network protocols:
+
+### HTTP (Hypertext Transfer Protocol)
+
+- **Purpose**: The protocol used for transferring web pages on the internet.
+- **Functionality**: HTTP defines how messages are formatted and transmitted, and how web servers and browsers should respond to various commands.
+
+### HTTPS (HTTP Secure)
+
+- **Purpose**: HTTPS is used for secure communication over the internet. Its primary goal is to protect the confidentiality and integrity of data transmitted between a user's browser and a web server.
+- **Functionality**: HTTPS achieves its security through encryption, authentication and data integrity.
+
+ ### SSH (Secure Shell)
+
+- **Purpose**: Provides a secure channel over an unsecured network, primarily for logging into a networked computer and executing commands.
+- **Functionality**: SSH uses encryption to ensure that the communication remains confidential and secure from unauthorized access.
+
+### FTP (File Transfer Protocol)
+
+- **Purpose**: Used for transferring files between a client and a server on a network.
+- **Functionality**: FTP allows users to upload, download, delete, and manage files on a remote server.
