@@ -82,3 +82,293 @@ UDP is another core member of the TCP/IP suite. Unlike TCP, it is connectionless
 | **Speed**          | Slower due to overhead                   | Faster due to minimal overhead                |
 | **Data Integrity** | High (error checking and correction)     | Lower (no error correction)                   |
 | **Use Case**       | Data that requires reliability and order | Real-time applications where speed is crucial |
+
+## Creating a Server and Client
+
+### Common Socket Methods
+
+`socket()`
+
+- **Purpose**: Creates a new socket, which is an endpoint for sending and receiving data.
+- **Functionality**:
+  - Non-blocking function
+  - Initializes a socket with specified address family and type.
+  - `AF_INET` for IPv4, `AF_INET6` for IPv6.
+  - `SOCK_STREAM` for TCP (reliable, connection-oriented), `SOCK_DGRAM` for UDP (unreliable, connectionless).
+- **Example**:
+    ```python
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ```
+
+`bind()`
+
+- **Purpose**: Associates the socket with a specific network interface and port number.
+- **Functionality**:
+  - Non-blocking function
+  - Binds a socket to an address (IP) and port, specifying where it should listen for incoming connections (server-side).
+  - Essential for servers to set up a fixed endpoint.
+- **Example**:
+    ```python
+    s.bind(('127.0.0.1', 8080))
+    ```
+
+`listen()`
+
+- **Purpose**: Enables a server socket to accept incoming connections.
+- **Functionality**:
+  - Non-blocking. It sets the socket to listening mode but does not wait for connections.
+  - Configures how many incoming connections the socket can queue.
+  - Transitions the socket into a listening state, waiting for connection requests.
+- **Example**:
+    ```python
+    s.listen()
+    ```
+
+`accept()`
+
+- **Purpose**: Accepts an incoming connection request from a client.
+- **Functionality**:
+  - Blocking. It waits for an incoming connection and blocks the program flow until a connection is made.
+  - Returns a new socket object representing the connection and a tuple with the client's address.
+  - Used in a loop to handle multiple client connections (server-side).
+- **Example**:
+    ```python
+    client_socket, addr = s.accept()
+    ```
+
+`connect()`
+
+- **Purpose**: Initiates a connection to a remote server.
+- **Functionality**:
+-  Blocking in normal circumstances. It actively attempts to establish a connection  to the server's IP and port and blocks until the connection is established or fails.
+  - Establishes a connection to a TCP server (client-side).
+- **Example**:
+    ```python
+    s.connect(('127.0.0.1', 8080))
+    ```
+
+`send()`
+
+- **Purpose**: Sends data through the socket to a connected peer.
+- **Functionality**:
+  - Blocking. It sends all data in bytes over the socket or an error occurs.
+  - Ensures the data is sent, possibly calling the method multiple times if all data is not sent in one call.
+- **Example**:
+    ```python
+    s.send(b'Hello, world')
+    ```
+
+`recv()`
+
+- **Purpose**: Receives data from the socket.
+- **Functionality**:
+  - Blocking. It waits for data to be received. If no data is available, it blocks the execution until at least some data is received.
+- **Example**:
+    ```python
+    data = s.recv(1024)
+    ```
+
+`close()`
+- **Purpose**: Closes the socket, releasing the resources.
+- **Functionality**:
+  - Non-blocking. It closes the socket and returns immediately.
+  - Terminates the connection in both directions.
+  - Frees up the resources associated with the socket.
+- **Example**:
+    ```python
+    s.close()
+    ```
+
+### Creating a Server
+
+```python
+# server.py
+import socket
+
+# create a socket
+# AF_INET specifies the address family (IPv4 in this case).
+# SOCK_STREAM indicates that it is a TCP socket.
+HOST, PORT = '127.0.0.1', 65432
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# bind the socket to the address & port
+server_socket.bind((HOST, PORT))
+
+# set in listen mode for incoming connections
+server_socket.listen()
+
+# wait for incomming connections
+client_socket, addr = server_socket.accept()
+
+# wait until received all data
+request = client_socket.recv(1024)
+data = request.decode("utf-8") # convert bytes to string
+print(f"Server: Received: {data}")
+
+# send message and terminate connection
+client_socket.sendall("Terminating server...")
+client_socket.close()
+
+# close the socket (cleanup & terminate)
+server_socket.close()
+```
+
+### Creating a Client
+
+```python
+# client.py
+import socket
+
+# create a socket
+# AF_INET specifies the address family (IPv4 in this case).
+# SOCK_STREAM indicates that it is a TCP socket.
+HOST, PORT = '127.0.0.1', 65432
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# connect to the existing server socket
+client_socket.connect((HOST, PORT))
+
+# send message to the server
+client_socket.sendall(b'Hello, world')
+
+# wait until received message
+request = client_socket.recv(1024)
+data = request.decode("utf-8") # convert bytes to string
+print(f"Client: Received: {data}")
+
+print('Received', repr(data))
+
+# close the socket (cleanup & terminate)
+client_socket.close()
+```
+
+## Handling Multiple Client Connections
+
+```python
+import socket
+import threading
+
+# Function to handle each client connection
+def handle_client(client_socket):
+    try:
+        # receive data
+        while True:
+            data = client_socket.recv(1024)
+            if not data:
+                break
+            client_socket.sendall("Received data!")
+    finally:
+        client_socket.close()
+
+def run():
+    # setup the server
+    print("Server initializing on {}:{}".format(HOST, PORT))
+    HOST, PORT = '127.0.0.1', 65432
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((HOST, PORT))
+    server_socket.listen()
+    print("Server listening...")
+
+    # listen for connections
+    try:
+        while True:
+            # wait until client connects
+            client_socket, addr = server_socket.accept()
+            print(f"Accepted connection from {addr}")
+            # start new thread to handle connection
+            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+            client_thread.start()
+    finally:
+        server_socket.close()
+
+if __name__ == "__main__":
+    run()
+```
+
+## Using asyncio For Network Communication
+
+`asyncio` is a Python library that provides a framework for writing single-threaded concurrent code using coroutines, multiplexing I/O access using the async and await syntax.
+
+## Streams 
+
+Streams in `asyncio` provide an abstraction for working with network IO. They allow you to write asynchronous code for handling network connections, such as reading from and writing to sockets, without directly dealing with the lower-level details of the protocol.
+
+Streams are particularly useful for developing network applications where you need to handle multiple connections efficiently.
+
+### Core Concepts of asyncio Streams
+
+The main classes used in `asyncio` streams are `StreamReader` and `StreamWriter`. 
+`StreamReader` is used for reading data from a stream, while `StreamWriter` is for writing data to a stream.
+
+`TCP` and `UDP`: asyncio supports both TCP (reliable, connection-oriented protocol) and UDP (unreliable, connectionless protocol) streams.
+
+### Creating a TCP Server
+
+You can use `asyncio.start_server` to create an asynchronous TCP server. This server will handle incoming connections and can read from and write to these connections.
+
+Example:
+```python
+import asyncio
+from asyncio import StreamReader, StreamWriter
+
+async def server_handle_client(reader: StreamReader, writer: StreamWriter):
+    # Wait for message from a client
+    data = await reader.read(100)  # Read up to 100 bytes
+    message = data.decode('utf8')
+    address = writer.get_extra_info('peername')
+    print(f"Server: Received {message} from {address}")
+
+    # Send a response to the client
+    print("Server: Sending response to client...")
+    new_message = "Sever is termenating..."
+    new_data = new_message.encode('utf8')
+    writer.write(new_data)
+    await writer.drain()
+
+    # Close the connection
+    writer.close()
+
+async def main():
+    server = await asyncio.start_server(server_handle_client, '127.0.0.1', 8888)
+
+    async with server:
+        await server.serve_forever()
+
+asyncio.run(main())
+```
+
+In this example, asyncio.start_server is used to create a server that listens on localhost (`127.0.0.1`) on port `8888`. For each client connection, `server_handle_client` coroutine is called with `StreamReader` and `StreamWriter` instances.
+
+### Creating a TCP Client
+
+To create a TCP client that connects to a server, use `asyncio.open_connection`. This returns `StreamReader` and `StreamWriter` objects for communication with the server.
+
+Example:
+
+
+```python
+import asyncio
+
+async def tcp_echo_client():
+    # Connect to the server
+    await asyncio.sleep(1)  # Give the server time to start
+    reader, writer = await asyncio.open_connection(addres, port)
+
+    # Send a message to the server
+    print("Client: Sending message...")
+    message = 'Hello World!'
+    writer.write(message.encode('utf8'))
+    await writer.drain()
+
+    # Receive a response
+    data = await reader.read(100)
+    print(f"Client: Reveived from Server: {data.decode('utf8')}")
+
+    # Close the connection
+    writer.close()
+    await writer.wait_closed()
+
+asyncio.run(tcp_echo_client())
+```
+
+In this client example, `asyncio.open_connection` is used to connect to the server running on `127.0.0.1:8888`. The client sends a message, waits for a response, and then closes the connection.
