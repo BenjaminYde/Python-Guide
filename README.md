@@ -73,6 +73,7 @@ Want to see what topics are in todo? See the **index per category**.
 - [Networking](guide/networking/_index.md)
   - [Introduction To Networking](guide/networking/introduction.md)
   - [Sockets](guide/networking/sockets.md)
+  - [HTTP Requests](guide/networking/http_requests.md)
 - TODO
   - Data Handling
   - Extentions
