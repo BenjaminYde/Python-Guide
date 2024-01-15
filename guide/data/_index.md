@@ -1,6 +1,6 @@
 # Index
 
-todo
+- [Working with bytes](./bytes.md)
 
 - json
 - pydantic

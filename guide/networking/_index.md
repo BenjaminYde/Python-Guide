@@ -3,6 +3,7 @@
 - [Introduction To Networking](introduction.md)
 - [Sockets](sockets.md)
 - [HTTP Requests](http_requests.md)
+- [gRPC](grpc.md)
 - websockets
   - Introduction to WebSockets and how they differ from HTTP.
   - Creating WebSocket clients and servers.
