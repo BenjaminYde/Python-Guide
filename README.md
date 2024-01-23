@@ -24,6 +24,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Typing](guide/general/typing.md)
   - [Scopes and References](guide/general/scopes_and_references.md)
   - [Exeptions](guide/general/exceptions.md)
+  - [Enums](guide/general/enum.md)
   - [Lambdas](guide/general/lambdas.md)
   - [Callable](guide/general/callable.md)
   - [Generics](guide/general/generics.md)
