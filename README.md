@@ -73,6 +73,7 @@ Want to see what topics are in todo? See the **index per category**.
   - [Concurrent Module](guide/concurrency/concurrent.md)
 - [Data](guide/data/_index.md)
   - [Working with Bytes](guide/data/bytes.md)
+  - [Numpy](guide/data/numpy.md)
 - [Networking](guide/networking/_index.md)
   - [Introduction To Networking](guide/networking/introduction.md)
   - [Sockets](guide/networking/sockets.md)
